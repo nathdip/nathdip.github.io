@@ -21,7 +21,7 @@
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="https://nathdip.github.io/first-post.html">First Post</a></h1>
+                    <h1 class="entry-title"><a href="https://nathdip.github.io/Second Post.html">Cancer Diagnosis</a></h1>
 <footer class="post-info">
         <abbr class="published" title="2017-12-12T15:34:00+01:00">
                 Published: Di 12 Dezember 2017
@@ -1008,7 +1008,7 @@ h6:hover .anchor-link {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Here-is-my-first-article-on-my-datascience-blog">Here is my first article on my datascience blog<a class="anchor-link" href="#Here-is-my-first-article-on-my-datascience-blog">¶</a></h1>
+<h1 id="Prediction-of-tumor-type">Prediction of tumor type<a class="anchor-link" href="#Prediction-of-tumor-type">¶</a></h1>
 </div>
 </div>
 </div>
@@ -1016,36 +1016,38 @@ h6:hover .anchor-link {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>I am currently a post doctoral fellow working in the field of atom interferometry. During the course of my research I crossed paths with machine learning and fell for it. Through this blog I will try to demonstrate machine learning basics so that anyone with knowledge of basic linear algebra should be able to understand.</p>
+<p>In this post I will try to analyze the dataset on diagnostic of breast cancer. The data being used is from the UCI repository and has also been widely analyzed in lots of Kaggle kernels. This is my own take on the dataset.</p>
+<p>Diagnosing a tumor can be tricky without actually doing a physical intervention. This might not be possible in some cases. This dataset provides a list of patients who were diagnosed with malignant or benign tumors. A list of around thirty features are included in the data. The features are extracted from the images of the tumor that were taken during diagnosis. More details about the data set can be found here <a href="http://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+%28Diagnostic%29">UCI repository</a></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Importing-basic-libraries-and-data">Importing basic libraries and data<a class="anchor-link" href="#Importing-basic-libraries-and-data">¶</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>First we import some of the basic python libraries. The data is in CSV format and we can import into pandas dataframe which is great tool for handling dataframeworks. Seaborn is a statistical tool in python which is useful for carrying out various statistical tests as well as for data visualization</p>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [1]:</div>
+<div class="prompt input_prompt">In [5]:</div>
 <div class="inner_cell">
 <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Numpy is one of the basic scientific packages in python. You will be using this package quite extensively while working with python. Let's look at a few basic examples.</p>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In [12]:</div>
-<div class="inner_cell">
-<div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#creating a list of equally spaced numbers</span>
-<span class="n">oneDarray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">99</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'data.csv'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1053,21 +1055,10 @@ h6:hover .anchor-link {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [13]:</div>
+<div class="prompt input_prompt">In [7]:</div>
 <div class="inner_cell">
 <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">oneDarray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">oneDarray</span><span class="p">,</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In [14]:</div>
-<div class="inner_cell">
-<div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">oneDarray</span><span class="o">.</span><span class="n">shape</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dataset</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">n</span> <span class="o">=</span> <span class="mi">20</span><span class="p">)</span><span class="c1"># this will give a preview of the first 20 patients</span>
 </pre></div>
 </div>
 </div>
@@ -1075,9 +1066,534 @@ h6:hover .anchor-link {
 <div class="output_wrapper">
 <div class="output">
 <div class="output_area">
-<div class="prompt output_prompt">Out[14]:</div>
-<div class="output_text output_subarea output_execute_result">
-<pre>(100, 1)</pre>
+<div class="prompt output_prompt">Out[7]:</div>
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>id</th>
+<th>diagnosis</th>
+<th>radius_mean</th>
+<th>texture_mean</th>
+<th>perimeter_mean</th>
+<th>area_mean</th>
+<th>smoothness_mean</th>
+<th>compactness_mean</th>
+<th>concavity_mean</th>
+<th>concave points_mean</th>
+<th>...</th>
+<th>texture_worst</th>
+<th>perimeter_worst</th>
+<th>area_worst</th>
+<th>smoothness_worst</th>
+<th>compactness_worst</th>
+<th>concavity_worst</th>
+<th>concave points_worst</th>
+<th>symmetry_worst</th>
+<th>fractal_dimension_worst</th>
+<th>Unnamed: 32</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>0</th>
+<td>842302</td>
+<td>M</td>
+<td>17.99</td>
+<td>10.38</td>
+<td>122.80</td>
+<td>1001.0</td>
+<td>0.11840</td>
+<td>0.27760</td>
+<td>0.30010</td>
+<td>0.14710</td>
+<td>...</td>
+<td>17.33</td>
+<td>184.60</td>
+<td>2019.0</td>
+<td>0.1622</td>
+<td>0.6656</td>
+<td>0.7119</td>
+<td>0.26540</td>
+<td>0.4601</td>
+<td>0.11890</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>1</th>
+<td>842517</td>
+<td>M</td>
+<td>20.57</td>
+<td>17.77</td>
+<td>132.90</td>
+<td>1326.0</td>
+<td>0.08474</td>
+<td>0.07864</td>
+<td>0.08690</td>
+<td>0.07017</td>
+<td>...</td>
+<td>23.41</td>
+<td>158.80</td>
+<td>1956.0</td>
+<td>0.1238</td>
+<td>0.1866</td>
+<td>0.2416</td>
+<td>0.18600</td>
+<td>0.2750</td>
+<td>0.08902</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>2</th>
+<td>84300903</td>
+<td>M</td>
+<td>19.69</td>
+<td>21.25</td>
+<td>130.00</td>
+<td>1203.0</td>
+<td>0.10960</td>
+<td>0.15990</td>
+<td>0.19740</td>
+<td>0.12790</td>
+<td>...</td>
+<td>25.53</td>
+<td>152.50</td>
+<td>1709.0</td>
+<td>0.1444</td>
+<td>0.4245</td>
+<td>0.4504</td>
+<td>0.24300</td>
+<td>0.3613</td>
+<td>0.08758</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>3</th>
+<td>84348301</td>
+<td>M</td>
+<td>11.42</td>
+<td>20.38</td>
+<td>77.58</td>
+<td>386.1</td>
+<td>0.14250</td>
+<td>0.28390</td>
+<td>0.24140</td>
+<td>0.10520</td>
+<td>...</td>
+<td>26.50</td>
+<td>98.87</td>
+<td>567.7</td>
+<td>0.2098</td>
+<td>0.8663</td>
+<td>0.6869</td>
+<td>0.25750</td>
+<td>0.6638</td>
+<td>0.17300</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>4</th>
+<td>84358402</td>
+<td>M</td>
+<td>20.29</td>
+<td>14.34</td>
+<td>135.10</td>
+<td>1297.0</td>
+<td>0.10030</td>
+<td>0.13280</td>
+<td>0.19800</td>
+<td>0.10430</td>
+<td>...</td>
+<td>16.67</td>
+<td>152.20</td>
+<td>1575.0</td>
+<td>0.1374</td>
+<td>0.2050</td>
+<td>0.4000</td>
+<td>0.16250</td>
+<td>0.2364</td>
+<td>0.07678</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>5</th>
+<td>843786</td>
+<td>M</td>
+<td>12.45</td>
+<td>15.70</td>
+<td>82.57</td>
+<td>477.1</td>
+<td>0.12780</td>
+<td>0.17000</td>
+<td>0.15780</td>
+<td>0.08089</td>
+<td>...</td>
+<td>23.75</td>
+<td>103.40</td>
+<td>741.6</td>
+<td>0.1791</td>
+<td>0.5249</td>
+<td>0.5355</td>
+<td>0.17410</td>
+<td>0.3985</td>
+<td>0.12440</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>6</th>
+<td>844359</td>
+<td>M</td>
+<td>18.25</td>
+<td>19.98</td>
+<td>119.60</td>
+<td>1040.0</td>
+<td>0.09463</td>
+<td>0.10900</td>
+<td>0.11270</td>
+<td>0.07400</td>
+<td>...</td>
+<td>27.66</td>
+<td>153.20</td>
+<td>1606.0</td>
+<td>0.1442</td>
+<td>0.2576</td>
+<td>0.3784</td>
+<td>0.19320</td>
+<td>0.3063</td>
+<td>0.08368</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>7</th>
+<td>84458202</td>
+<td>M</td>
+<td>13.71</td>
+<td>20.83</td>
+<td>90.20</td>
+<td>577.9</td>
+<td>0.11890</td>
+<td>0.16450</td>
+<td>0.09366</td>
+<td>0.05985</td>
+<td>...</td>
+<td>28.14</td>
+<td>110.60</td>
+<td>897.0</td>
+<td>0.1654</td>
+<td>0.3682</td>
+<td>0.2678</td>
+<td>0.15560</td>
+<td>0.3196</td>
+<td>0.11510</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>8</th>
+<td>844981</td>
+<td>M</td>
+<td>13.00</td>
+<td>21.82</td>
+<td>87.50</td>
+<td>519.8</td>
+<td>0.12730</td>
+<td>0.19320</td>
+<td>0.18590</td>
+<td>0.09353</td>
+<td>...</td>
+<td>30.73</td>
+<td>106.20</td>
+<td>739.3</td>
+<td>0.1703</td>
+<td>0.5401</td>
+<td>0.5390</td>
+<td>0.20600</td>
+<td>0.4378</td>
+<td>0.10720</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>9</th>
+<td>84501001</td>
+<td>M</td>
+<td>12.46</td>
+<td>24.04</td>
+<td>83.97</td>
+<td>475.9</td>
+<td>0.11860</td>
+<td>0.23960</td>
+<td>0.22730</td>
+<td>0.08543</td>
+<td>...</td>
+<td>40.68</td>
+<td>97.65</td>
+<td>711.4</td>
+<td>0.1853</td>
+<td>1.0580</td>
+<td>1.1050</td>
+<td>0.22100</td>
+<td>0.4366</td>
+<td>0.20750</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>10</th>
+<td>845636</td>
+<td>M</td>
+<td>16.02</td>
+<td>23.24</td>
+<td>102.70</td>
+<td>797.8</td>
+<td>0.08206</td>
+<td>0.06669</td>
+<td>0.03299</td>
+<td>0.03323</td>
+<td>...</td>
+<td>33.88</td>
+<td>123.80</td>
+<td>1150.0</td>
+<td>0.1181</td>
+<td>0.1551</td>
+<td>0.1459</td>
+<td>0.09975</td>
+<td>0.2948</td>
+<td>0.08452</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>11</th>
+<td>84610002</td>
+<td>M</td>
+<td>15.78</td>
+<td>17.89</td>
+<td>103.60</td>
+<td>781.0</td>
+<td>0.09710</td>
+<td>0.12920</td>
+<td>0.09954</td>
+<td>0.06606</td>
+<td>...</td>
+<td>27.28</td>
+<td>136.50</td>
+<td>1299.0</td>
+<td>0.1396</td>
+<td>0.5609</td>
+<td>0.3965</td>
+<td>0.18100</td>
+<td>0.3792</td>
+<td>0.10480</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>12</th>
+<td>846226</td>
+<td>M</td>
+<td>19.17</td>
+<td>24.80</td>
+<td>132.40</td>
+<td>1123.0</td>
+<td>0.09740</td>
+<td>0.24580</td>
+<td>0.20650</td>
+<td>0.11180</td>
+<td>...</td>
+<td>29.94</td>
+<td>151.70</td>
+<td>1332.0</td>
+<td>0.1037</td>
+<td>0.3903</td>
+<td>0.3639</td>
+<td>0.17670</td>
+<td>0.3176</td>
+<td>0.10230</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>13</th>
+<td>846381</td>
+<td>M</td>
+<td>15.85</td>
+<td>23.95</td>
+<td>103.70</td>
+<td>782.7</td>
+<td>0.08401</td>
+<td>0.10020</td>
+<td>0.09938</td>
+<td>0.05364</td>
+<td>...</td>
+<td>27.66</td>
+<td>112.00</td>
+<td>876.5</td>
+<td>0.1131</td>
+<td>0.1924</td>
+<td>0.2322</td>
+<td>0.11190</td>
+<td>0.2809</td>
+<td>0.06287</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>14</th>
+<td>84667401</td>
+<td>M</td>
+<td>13.73</td>
+<td>22.61</td>
+<td>93.60</td>
+<td>578.3</td>
+<td>0.11310</td>
+<td>0.22930</td>
+<td>0.21280</td>
+<td>0.08025</td>
+<td>...</td>
+<td>32.01</td>
+<td>108.80</td>
+<td>697.7</td>
+<td>0.1651</td>
+<td>0.7725</td>
+<td>0.6943</td>
+<td>0.22080</td>
+<td>0.3596</td>
+<td>0.14310</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>15</th>
+<td>84799002</td>
+<td>M</td>
+<td>14.54</td>
+<td>27.54</td>
+<td>96.73</td>
+<td>658.8</td>
+<td>0.11390</td>
+<td>0.15950</td>
+<td>0.16390</td>
+<td>0.07364</td>
+<td>...</td>
+<td>37.13</td>
+<td>124.10</td>
+<td>943.2</td>
+<td>0.1678</td>
+<td>0.6577</td>
+<td>0.7026</td>
+<td>0.17120</td>
+<td>0.4218</td>
+<td>0.13410</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>16</th>
+<td>848406</td>
+<td>M</td>
+<td>14.68</td>
+<td>20.13</td>
+<td>94.74</td>
+<td>684.5</td>
+<td>0.09867</td>
+<td>0.07200</td>
+<td>0.07395</td>
+<td>0.05259</td>
+<td>...</td>
+<td>30.88</td>
+<td>123.40</td>
+<td>1138.0</td>
+<td>0.1464</td>
+<td>0.1871</td>
+<td>0.2914</td>
+<td>0.16090</td>
+<td>0.3029</td>
+<td>0.08216</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>17</th>
+<td>84862001</td>
+<td>M</td>
+<td>16.13</td>
+<td>20.68</td>
+<td>108.10</td>
+<td>798.8</td>
+<td>0.11700</td>
+<td>0.20220</td>
+<td>0.17220</td>
+<td>0.10280</td>
+<td>...</td>
+<td>31.48</td>
+<td>136.80</td>
+<td>1315.0</td>
+<td>0.1789</td>
+<td>0.4233</td>
+<td>0.4784</td>
+<td>0.20730</td>
+<td>0.3706</td>
+<td>0.11420</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>18</th>
+<td>849014</td>
+<td>M</td>
+<td>19.81</td>
+<td>22.15</td>
+<td>130.00</td>
+<td>1260.0</td>
+<td>0.09831</td>
+<td>0.10270</td>
+<td>0.14790</td>
+<td>0.09498</td>
+<td>...</td>
+<td>30.88</td>
+<td>186.80</td>
+<td>2398.0</td>
+<td>0.1512</td>
+<td>0.3150</td>
+<td>0.5372</td>
+<td>0.23880</td>
+<td>0.2768</td>
+<td>0.07615</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>19</th>
+<td>8510426</td>
+<td>B</td>
+<td>13.54</td>
+<td>14.36</td>
+<td>87.46</td>
+<td>566.3</td>
+<td>0.09779</td>
+<td>0.08129</td>
+<td>0.06664</td>
+<td>0.04781</td>
+<td>...</td>
+<td>19.26</td>
+<td>99.70</td>
+<td>711.2</td>
+<td>0.1440</td>
+<td>0.1773</td>
+<td>0.2390</td>
+<td>0.12880</td>
+<td>0.2977</td>
+<td>0.07259</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+<p>20 rows × 33 columns</p>
+</div>
 </div>
 </div>
 </div>
@@ -1087,7 +1603,155 @@ h6:hover .anchor-link {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>In the previous cell we reshaped a list of length hundred to an array of shape (100,1) using the numpy.reshape command.</p>
+<h3 id="Some-Basic-Visualization">Some Basic Visualization<a class="anchor-link" href="#Some-Basic-Visualization">¶</a></h3><p>One of the most basic visualizations that we can do is to do a bar plot of the number of the malignant (label M) and benign (label B) tumor. We can fo this by using the seaborn package</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [16]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">countplot</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="s1">'diagnosis'</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">)</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Bar plot for the two diagnosis '</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,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
+TkSuQmCC
+">
+</img></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>From the figure above we see that the data consists of more benign tumor diagnosis (around 350 in number ) compared to cases of malignant tumor (around 200 in number). The numbers here are not very skewed and one can mistakenly assume that Wisconsin seems to have a big case of breast cancer amongst it's population. It seems so because right now we are only concentrating on a specific class of the population, females with tumors in their breasts to be exact. If we were to compare the number of cases of where malignant tumor was diagnosed with the to total number of persons visiting hospitals all over Wisconsin then we would finf</p>
 </div>
 </div>
 </div>
@@ -1122,6 +1786,47 @@ h6:hover .anchor-link {
 </script>
                 </article>
             </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <hr />
+                    <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="https://nathdip.github.io/first-post.html" rel="bookmark"
+                           title="Permalink to First Post">First Post</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2017-12-12T15:34:00+01:00">
+                Published: Di 12 Dezember 2017
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="https://nathdip.github.io/author/dipankar.html">Dipankar</a>
+        </address>
+<p>In <a href="https://nathdip.github.io/category/posts.html">posts</a>.</p>
+<p>tags: <a href="https://nathdip.github.io/tag/python-firsts.html">python firsts</a> </p>
+</footer><!-- /.post-info -->                
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Here-is-my-first-article-on-my-datascience-blog">Here is my first article on my datascience blog<a class="anchor-link" href="#Here-is-my-first-article-on-my-datascience-blog">¶</a></h1>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>I am currently a post doctoral fellow working in the field of atom interferometry. During the course of my research I crossed paths with machine learning and fell for it. Through this blog I will try to demonstrate machine learning basics so that anyone with knowledge of basic linear algebra should be able to understand.</p>
+                <a class="readmore" href="https://nathdip.github.io/first-post.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+                </ol><!-- /#posts-list -->
+                </section><!-- /#content -->
         <section id="extras" class="body">
                 <div class="blogroll">
                         <h2>links</h2>
