@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Dip's Blog</title><link href="https://nathdip.github.io/" rel="alternate"></link><link href="https://nathdip.github.io/feeds/all.atom.xml" rel="self"></link><id>https://nathdip.github.io/</id><updated>2017-12-20T15:03:00+01:00</updated><entry><title>Cancer Diagnosis-II</title><link href="https://nathdip.github.io/cancer%20diagnosis%20II.html" rel="alternate"></link><published>2017-12-20T15:03:00+01:00</published><updated>2017-12-20T15:03:00+01:00</updated><author><name>Dipankar</name></author><id>tag:nathdip.github.io,2017-12-20:/cancer diagnosis II.html</id><summary type="html">
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Dip's Blog</title><link href="https://nathdip.github.io/" rel="alternate"></link><link href="https://nathdip.github.io/feeds/all.atom.xml" rel="self"></link><id>https://nathdip.github.io/</id><updated>2017-12-20T15:34:00+01:00</updated><entry><title>Cancer Diagnosis-II</title><link href="https://nathdip.github.io/cancer%20diagnosis%20II.html" rel="alternate"></link><published>2017-12-20T15:34:00+01:00</published><updated>2017-12-20T15:34:00+01:00</updated><author><name>Dipankar</name></author><id>tag:nathdip.github.io,2017-12-20:/cancer diagnosis II.html</id><summary type="html">
 &lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
 &lt;/div&gt;
 &lt;div class="inner_cell"&gt;
@@ -1990,7 +1990,7 @@ Epoch 100/100
     (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
 }
 &lt;/script&gt;
-</content><category term="python firsts"></category></entry><entry><title>Cancer Diagnosis-I</title><link href="https://nathdip.github.io/cancer%20diagnosis%20I.html" rel="alternate"></link><published>2017-12-12T15:34:00+01:00</published><updated>2017-12-12T15:34:00+01:00</updated><author><name>Dipankar</name></author><id>tag:nathdip.github.io,2017-12-12:/cancer diagnosis I.html</id><summary type="html">
+</content><category term="python"></category><category term="ANN"></category><category term="Keras"></category></entry><entry><title>Cancer Diagnosis-I</title><link href="https://nathdip.github.io/cancer%20diagnosis%20I.html" rel="alternate"></link><published>2017-12-12T15:34:00+01:00</published><updated>2017-12-12T15:34:00+01:00</updated><author><name>Dipankar</name></author><id>tag:nathdip.github.io,2017-12-12:/cancer diagnosis I.html</id><summary type="html">
 &lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
 &lt;/div&gt;
 &lt;div class="inner_cell"&gt;
@@ -10096,7 +10096,7 @@ SVKHsyGUJEnqcDaEkiRJHe7/A7hGyHBoniI4AAAAAElFTkSuQmCC
     (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
 }
 &lt;/script&gt;
-</content><category term="python firsts"></category></entry><entry><title>First Post</title><link href="https://nathdip.github.io/first-post.html" rel="alternate"></link><published>2017-12-12T15:34:00+01:00</published><updated>2017-12-12T15:34:00+01:00</updated><author><name>Dipankar</name></author><id>tag:nathdip.github.io,2017-12-12:/first-post.html</id><summary type="html">
+</content><category term="python"></category><category term="seaborn"></category></entry><entry><title>First Post</title><link href="https://nathdip.github.io/first-post.html" rel="alternate"></link><published>2017-12-12T15:34:00+01:00</published><updated>2017-12-12T15:34:00+01:00</updated><author><name>Dipankar</name></author><id>tag:nathdip.github.io,2017-12-12:/first-post.html</id><summary type="html">
 &lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
 &lt;/div&gt;
 &lt;div class="inner_cell"&gt;
