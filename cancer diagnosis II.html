@@ -1942,13 +1942,13 @@ Epoch 100/100
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Our classifier seems to have a really good accuracy on the test set. But that might be just because of overfitting. The Dropout is used as a form of regularization while training our classifier. However in order to know the actual accuracy of our classifier we need to implement on the test set and check how .</p>
+<p>Our classifier seems to have a really good accuracy on the training set. But that might be just because of overfitting. The Dropout is used as a form of regularization while training our classifier. However in order to know the actual accuracy of our classifier we need to implement on the test set and how well our classifier performs.</p>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [53]:</div>
+<div class="prompt input_prompt">In [57]:</div>
 <div class="inner_cell">
 <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Predicting the Test set results</span>
@@ -1965,7 +1965,7 @@ Epoch 100/100
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In [54]:</div>
+<div class="prompt input_prompt">In [58]:</div>
 <div class="inner_cell">
 <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">accuracy_cm</span> <span class="o">=</span> <span class="p">(</span><span class="n">cm</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">cm</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">cm</span><span class="p">)))</span>
@@ -1990,7 +1990,7 @@ Epoch 100/100
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>This is not bad, our algorithm is able to distinguish between malignant and benign tumors with an accuracy of nearly 96.5%. Remember this dataset is not large but with the extensive number of features and a deep artificial neural network, we are able to make a very good prediction. We still have nearly 5% chance of getting it wrong. bUt for a first trial it is not bad.</p>
+<p>This is not bad, our algorithm is able to distinguish between malignant and benign tumors with an accuracy of nearly 96.5%. Remember this dataset is not large but with the extensive number of features and a deep artificial neural network, we are able to make a very good prediction. We still have nearly 5% chance of getting it wrong. There also seems to be a difference between the accuracy on the training set and that on the test set. We would also like to close that bridge if it is possible.</p>
 </div>
 </div>
 </div>

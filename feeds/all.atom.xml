@@ -1909,13 +1909,13 @@ Epoch 100/100
 &lt;/div&gt;
 &lt;div class="inner_cell"&gt;
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
-&lt;p&gt;Our classifier seems to have a really good accuracy on the test set. But that might be just because of overfitting. The Dropout is used as a form of regularization while training our classifier. However in order to know the actual accuracy of our classifier we need to implement on the test set and check how .&lt;/p&gt;
+&lt;p&gt;Our classifier seems to have a really good accuracy on the training set. But that might be just because of overfitting. The Dropout is used as a form of regularization while training our classifier. However in order to know the actual accuracy of our classifier we need to implement on the test set and how well our classifier performs.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;div class="cell border-box-sizing code_cell rendered"&gt;
 &lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [53]:&lt;/div&gt;
+&lt;div class="prompt input_prompt"&gt;In [57]:&lt;/div&gt;
 &lt;div class="inner_cell"&gt;
 &lt;div class="input_area"&gt;
 &lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# Predicting the Test set results&lt;/span&gt;
@@ -1932,7 +1932,7 @@ Epoch 100/100
 &lt;/div&gt;
 &lt;div class="cell border-box-sizing code_cell rendered"&gt;
 &lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [54]:&lt;/div&gt;
+&lt;div class="prompt input_prompt"&gt;In [58]:&lt;/div&gt;
 &lt;div class="inner_cell"&gt;
 &lt;div class="input_area"&gt;
 &lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;accuracy_cm&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cm&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;cm&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cm&lt;/span&gt;&lt;span class="p"&gt;)))&lt;/span&gt;
@@ -1957,7 +1957,7 @@ Epoch 100/100
 &lt;/div&gt;
 &lt;div class="inner_cell"&gt;
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
-&lt;p&gt;This is not bad, our algorithm is able to distinguish between malignant and benign tumors with an accuracy of nearly 96.5%. Remember this dataset is not large but with the extensive number of features and a deep artificial neural network, we are able to make a very good prediction. We still have nearly 5% chance of getting it wrong. bUt for a first trial it is not bad.&lt;/p&gt;
+&lt;p&gt;This is not bad, our algorithm is able to distinguish between malignant and benign tumors with an accuracy of nearly 96.5%. Remember this dataset is not large but with the extensive number of features and a deep artificial neural network, we are able to make a very good prediction. We still have nearly 5% chance of getting it wrong. There also seems to be a difference between the accuracy on the training set and that on the test set. We would also like to close that bridge if it is possible.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
