@@ -1,5 +1,1996 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Dip's Blog</title><link href="https://nathdip.github.io/" rel="alternate"></link><link href="https://nathdip.github.io/feeds/all.atom.xml" rel="self"></link><id>https://nathdip.github.io/</id><updated>2017-12-12T15:34:00+01:00</updated><entry><title>Cancer Diagnosis-I</title><link href="https://nathdip.github.io/cancer%20diagnosis%20I.html" rel="alternate"></link><published>2017-12-12T15:34:00+01:00</published><updated>2017-12-12T15:34:00+01:00</updated><author><name>Dipankar</name></author><id>tag:nathdip.github.io,2017-12-12:/cancer diagnosis I.html</id><summary type="html">
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Dip's Blog</title><link href="https://nathdip.github.io/" rel="alternate"></link><link href="https://nathdip.github.io/feeds/all.atom.xml" rel="self"></link><id>https://nathdip.github.io/</id><updated>2017-12-20T15:03:00+01:00</updated><entry><title>Cancer Diagnosis-II</title><link href="https://nathdip.github.io/cancer%20diagnosis%20II.html" rel="alternate"></link><published>2017-12-20T15:03:00+01:00</published><updated>2017-12-20T15:03:00+01:00</updated><author><name>Dipankar</name></author><id>tag:nathdip.github.io,2017-12-20:/cancer diagnosis II.html</id><summary type="html">
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h1 id="Diagnosis-of-cancer"&gt;Diagnosis of cancer&lt;a class="anchor-link" href="#Diagnosis-of-cancer"&gt;¶&lt;/a&gt;&lt;/h1&gt;&lt;p&gt;In this post I will describe how to build a deep neural network that can predict whether a tumor is malignant or benign. In the earlier &lt;a href="https://nathdip.github.io/cancer%20diagnosis%20I.html"&gt;post&lt;/a&gt;, we have looked into how we can use a linear classifier and just two features to classify the different tumors. However with the large number of features at our disposal a logical way to get the best classification is to train a neural network.&lt;/p&gt;</summary><content type="html">&lt;style type="text/css"&gt;/*!
+*
+* IPython notebook
+*
+*/
+/* CSS font colors for translated ANSI colors. */
+.ansibold {
+  font-weight: bold;
+}
+/* use dark versions for foreground, to improve visibility */
+.ansiblack {
+  color: black;
+}
+.ansired {
+  color: darkred;
+}
+.ansigreen {
+  color: darkgreen;
+}
+.ansiyellow {
+  color: #c4a000;
+}
+.ansiblue {
+  color: darkblue;
+}
+.ansipurple {
+  color: darkviolet;
+}
+.ansicyan {
+  color: steelblue;
+}
+.ansigray {
+  color: gray;
+}
+/* and light for background, for the same reason */
+.ansibgblack {
+  background-color: black;
+}
+.ansibgred {
+  background-color: red;
+}
+.ansibggreen {
+  background-color: green;
+}
+.ansibgyellow {
+  background-color: yellow;
+}
+.ansibgblue {
+  background-color: blue;
+}
+.ansibgpurple {
+  background-color: magenta;
+}
+.ansibgcyan {
+  background-color: cyan;
+}
+.ansibggray {
+  background-color: gray;
+}
+div.cell {
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  border-radius: 2px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  border-width: 1px;
+  border-style: solid;
+  border-color: transparent;
+  width: 100%;
+  padding: 5px;
+  /* This acts as a spacer between cells, that is outside the border */
+  margin: 0px;
+  outline: none;
+  border-left-width: 1px;
+  padding-left: 5px;
+  background: linear-gradient(to right, transparent -40px, transparent 1px, transparent 1px, transparent 100%);
+}
+div.cell.jupyter-soft-selected {
+  border-left-color: #90CAF9;
+  border-left-color: #E3F2FD;
+  border-left-width: 1px;
+  padding-left: 5px;
+  border-right-color: #E3F2FD;
+  border-right-width: 1px;
+  background: #E3F2FD;
+}
+@media print {
+  div.cell.jupyter-soft-selected {
+    border-color: transparent;
+  }
+}
+div.cell.selected {
+  border-color: #ababab;
+  border-left-width: 0px;
+  padding-left: 6px;
+  background: linear-gradient(to right, #42A5F5 -40px, #42A5F5 5px, transparent 5px, transparent 100%);
+}
+@media print {
+  div.cell.selected {
+    border-color: transparent;
+  }
+}
+div.cell.selected.jupyter-soft-selected {
+  border-left-width: 0;
+  padding-left: 6px;
+  background: linear-gradient(to right, #42A5F5 -40px, #42A5F5 7px, #E3F2FD 7px, #E3F2FD 100%);
+}
+.edit_mode div.cell.selected {
+  border-color: #66BB6A;
+  border-left-width: 0px;
+  padding-left: 6px;
+  background: linear-gradient(to right, #66BB6A -40px, #66BB6A 5px, transparent 5px, transparent 100%);
+}
+@media print {
+  .edit_mode div.cell.selected {
+    border-color: transparent;
+  }
+}
+.prompt {
+  /* This needs to be wide enough for 3 digit prompt numbers: In[100]: */
+  min-width: 14ex;
+  /* This padding is tuned to match the padding on the CodeMirror editor. */
+  padding: 0.4em;
+  margin: 0px;
+  font-family: monospace;
+  text-align: right;
+  /* This has to match that of the the CodeMirror class line-height below */
+  line-height: 1.21429em;
+  /* Don't highlight prompt number selection */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  /* Use default cursor */
+  cursor: default;
+}
+@media (max-width: 540px) {
+  .prompt {
+    text-align: left;
+  }
+}
+div.inner_cell {
+  min-width: 0;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  /* Old browsers */
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  box-flex: 1;
+  /* Modern browsers */
+  flex: 1;
+}
+/* input_area and input_prompt must match in top border and margin for alignment */
+div.input_area {
+  border: 1px solid #cfcfcf;
+  border-radius: 2px;
+  background: #f7f7f7;
+  line-height: 1.21429em;
+}
+/* This is needed so that empty prompt areas can collapse to zero height when there
+   is no content in the output_subarea and the prompt. The main purpose of this is
+   to make sure that empty JavaScript output_subareas have no height. */
+div.prompt:empty {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+div.unrecognized_cell {
+  padding: 5px 5px 5px 0px;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: horizontal;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+div.unrecognized_cell .inner_cell {
+  border-radius: 2px;
+  padding: 5px;
+  font-weight: bold;
+  color: red;
+  border: 1px solid #cfcfcf;
+  background: #eaeaea;
+}
+div.unrecognized_cell .inner_cell a {
+  color: inherit;
+  text-decoration: none;
+}
+div.unrecognized_cell .inner_cell a:hover {
+  color: inherit;
+  text-decoration: none;
+}
+@media (max-width: 540px) {
+  div.unrecognized_cell &gt; div.prompt {
+    display: none;
+  }
+}
+div.code_cell {
+  /* avoid page breaking on code cells when printing */
+}
+@media print {
+  div.code_cell {
+    page-break-inside: avoid;
+  }
+}
+/* any special styling for code cells that are currently running goes here */
+div.input {
+  page-break-inside: avoid;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: horizontal;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+@media (max-width: 540px) {
+  div.input {
+    /* Old browsers */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-box-align: stretch;
+    display: -moz-box;
+    -moz-box-orient: vertical;
+    -moz-box-align: stretch;
+    display: box;
+    box-orient: vertical;
+    box-align: stretch;
+    /* Modern browsers */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+/* input_area and input_prompt must match in top border and margin for alignment */
+div.input_prompt {
+  color: #303F9F;
+  border-top: 1px solid transparent;
+}
+div.input_area &gt; div.highlight {
+  margin: 0.4em;
+  border: none;
+  padding: 0px;
+  background-color: transparent;
+}
+div.input_area &gt; div.highlight &gt; pre {
+  margin: 0px;
+  border: none;
+  padding: 0px;
+  background-color: transparent;
+}
+/* The following gets added to the &lt;head&gt; if it is detected that the user has a
+ * monospace font with inconsistent normal/bold/italic height.  See
+ * notebookmain.js.  Such fonts will have keywords vertically offset with
+ * respect to the rest of the text.  The user should select a better font.
+ * See: https://github.com/ipython/ipython/issues/1503
+ *
+ * .CodeMirror span {
+ *      vertical-align: bottom;
+ * }
+ */
+.CodeMirror {
+  line-height: 1.21429em;
+  /* Changed from 1em to our global default */
+  font-size: 14px;
+  height: auto;
+  /* Changed to auto to autogrow */
+  background: none;
+  /* Changed from white to allow our bg to show through */
+}
+.CodeMirror-scroll {
+  /*  The CodeMirror docs are a bit fuzzy on if overflow-y should be hidden or visible.*/
+  /*  We have found that if it is visible, vertical scrollbars appear with font size changes.*/
+  overflow-y: hidden;
+  overflow-x: auto;
+}
+.CodeMirror-lines {
+  /* In CM2, this used to be 0.4em, but in CM3 it went to 4px. We need the em value because */
+  /* we have set a different line-height and want this to scale with that. */
+  padding: 0.4em;
+}
+.CodeMirror-linenumber {
+  padding: 0 8px 0 4px;
+}
+.CodeMirror-gutters {
+  border-bottom-left-radius: 2px;
+  border-top-left-radius: 2px;
+}
+.CodeMirror pre {
+  /* In CM3 this went to 4px from 0 in CM2. We need the 0 value because of how we size */
+  /* .CodeMirror-lines */
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+}
+/*
+
+Original style from softwaremaniacs.org (c) Ivan Sagalaev &lt;Maniac@SoftwareManiacs.Org&gt;
+Adapted from GitHub theme
+
+*/
+.highlight-base {
+  color: #000;
+}
+.highlight-variable {
+  color: #000;
+}
+.highlight-variable-2 {
+  color: #1a1a1a;
+}
+.highlight-variable-3 {
+  color: #333333;
+}
+.highlight-string {
+  color: #BA2121;
+}
+.highlight-comment {
+  color: #408080;
+  font-style: italic;
+}
+.highlight-number {
+  color: #080;
+}
+.highlight-atom {
+  color: #88F;
+}
+.highlight-keyword {
+  color: #008000;
+  font-weight: bold;
+}
+.highlight-builtin {
+  color: #008000;
+}
+.highlight-error {
+  color: #f00;
+}
+.highlight-operator {
+  color: #AA22FF;
+  font-weight: bold;
+}
+.highlight-meta {
+  color: #AA22FF;
+}
+/* previously not defined, copying from default codemirror */
+.highlight-def {
+  color: #00f;
+}
+.highlight-string-2 {
+  color: #f50;
+}
+.highlight-qualifier {
+  color: #555;
+}
+.highlight-bracket {
+  color: #997;
+}
+.highlight-tag {
+  color: #170;
+}
+.highlight-attribute {
+  color: #00c;
+}
+.highlight-header {
+  color: blue;
+}
+.highlight-quote {
+  color: #090;
+}
+.highlight-link {
+  color: #00c;
+}
+/* apply the same style to codemirror */
+.cm-s-ipython span.cm-keyword {
+  color: #008000;
+  font-weight: bold;
+}
+.cm-s-ipython span.cm-atom {
+  color: #88F;
+}
+.cm-s-ipython span.cm-number {
+  color: #080;
+}
+.cm-s-ipython span.cm-def {
+  color: #00f;
+}
+.cm-s-ipython span.cm-variable {
+  color: #000;
+}
+.cm-s-ipython span.cm-operator {
+  color: #AA22FF;
+  font-weight: bold;
+}
+.cm-s-ipython span.cm-variable-2 {
+  color: #1a1a1a;
+}
+.cm-s-ipython span.cm-variable-3 {
+  color: #333333;
+}
+.cm-s-ipython span.cm-comment {
+  color: #408080;
+  font-style: italic;
+}
+.cm-s-ipython span.cm-string {
+  color: #BA2121;
+}
+.cm-s-ipython span.cm-string-2 {
+  color: #f50;
+}
+.cm-s-ipython span.cm-meta {
+  color: #AA22FF;
+}
+.cm-s-ipython span.cm-qualifier {
+  color: #555;
+}
+.cm-s-ipython span.cm-builtin {
+  color: #008000;
+}
+.cm-s-ipython span.cm-bracket {
+  color: #997;
+}
+.cm-s-ipython span.cm-tag {
+  color: #170;
+}
+.cm-s-ipython span.cm-attribute {
+  color: #00c;
+}
+.cm-s-ipython span.cm-header {
+  color: blue;
+}
+.cm-s-ipython span.cm-quote {
+  color: #090;
+}
+.cm-s-ipython span.cm-link {
+  color: #00c;
+}
+.cm-s-ipython span.cm-error {
+  color: #f00;
+}
+.cm-s-ipython span.cm-tab {
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAMCAYAAAAkuj5RAAAAAXNSR0IArs4c6QAAAGFJREFUSMft1LsRQFAQheHPowAKoACx3IgEKtaEHujDjORSgWTH/ZOdnZOcM/sgk/kFFWY0qV8foQwS4MKBCS3qR6ixBJvElOobYAtivseIE120FaowJPN75GMu8j/LfMwNjh4HUpwg4LUAAAAASUVORK5CYII=);
+  background-position: right;
+  background-repeat: no-repeat;
+}
+div.output_wrapper {
+  /* this position must be relative to enable descendents to be absolute within it */
+  position: relative;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  z-index: 1;
+}
+/* class for the output area when it should be height-limited */
+div.output_scroll {
+  /* ideally, this would be max-height, but FF barfs all over that */
+  height: 24em;
+  /* FF needs this *and the wrapper* to specify full width, or it will shrinkwrap */
+  width: 100%;
+  overflow: auto;
+  border-radius: 2px;
+  -webkit-box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
+  display: block;
+}
+/* output div while it is collapsed */
+div.output_collapsed {
+  margin: 0px;
+  padding: 0px;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+div.out_prompt_overlay {
+  height: 100%;
+  padding: 0px 0.4em;
+  position: absolute;
+  border-radius: 2px;
+}
+div.out_prompt_overlay:hover {
+  /* use inner shadow to get border that is computed the same on WebKit/FF */
+  -webkit-box-shadow: inset 0 0 1px #000;
+  box-shadow: inset 0 0 1px #000;
+  background: rgba(240, 240, 240, 0.5);
+}
+div.output_prompt {
+  color: #D84315;
+}
+/* This class is the outer container of all output sections. */
+div.output_area {
+  padding: 0px;
+  page-break-inside: avoid;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: horizontal;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+div.output_area .MathJax_Display {
+  text-align: left !important;
+}
+div.output_area 
+div.output_area 
+div.output_area img,
+div.output_area svg {
+  max-width: 100%;
+  height: auto;
+}
+div.output_area img.unconfined,
+div.output_area svg.unconfined {
+  max-width: none;
+}
+/* This is needed to protect the pre formating from global settings such
+   as that of bootstrap */
+.output {
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+@media (max-width: 540px) {
+  div.output_area {
+    /* Old browsers */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-box-align: stretch;
+    display: -moz-box;
+    -moz-box-orient: vertical;
+    -moz-box-align: stretch;
+    display: box;
+    box-orient: vertical;
+    box-align: stretch;
+    /* Modern browsers */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+div.output_area pre {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  vertical-align: baseline;
+  color: black;
+  background-color: transparent;
+  border-radius: 0;
+}
+/* This class is for the output subarea inside the output_area and after
+   the prompt div. */
+div.output_subarea {
+  overflow-x: auto;
+  padding: 0.4em;
+  /* Old browsers */
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  box-flex: 1;
+  /* Modern browsers */
+  flex: 1;
+  max-width: calc(100% - 14ex);
+}
+div.output_scroll div.output_subarea {
+  overflow-x: visible;
+}
+/* The rest of the output_* classes are for special styling of the different
+   output types */
+/* all text output has this class: */
+div.output_text {
+  text-align: left;
+  color: #000;
+  /* This has to match that of the the CodeMirror class line-height below */
+  line-height: 1.21429em;
+}
+/* stdout/stderr are 'text' as well as 'stream', but execute_result/error are *not* streams */
+div.output_stderr {
+  background: #fdd;
+  /* very light red background for stderr */
+}
+div.output_latex {
+  text-align: left;
+}
+/* Empty output_javascript divs should have no height */
+div.output_javascript:empty {
+  padding: 0;
+}
+.js-error {
+  color: darkred;
+}
+/* raw_input styles */
+div.raw_input_container {
+  line-height: 1.21429em;
+  padding-top: 5px;
+}
+pre.raw_input_prompt {
+  /* nothing needed here. */
+}
+input.raw_input {
+  font-family: monospace;
+  font-size: inherit;
+  color: inherit;
+  width: auto;
+  /* make sure input baseline aligns with prompt */
+  vertical-align: baseline;
+  /* padding + margin = 0.5em between prompt and cursor */
+  padding: 0em 0.25em;
+  margin: 0em 0.25em;
+}
+input.raw_input:focus {
+  box-shadow: none;
+}
+p.p-space {
+  margin-bottom: 10px;
+}
+div.output_unrecognized {
+  padding: 5px;
+  font-weight: bold;
+  color: red;
+}
+div.output_unrecognized a {
+  color: inherit;
+  text-decoration: none;
+}
+div.output_unrecognized a:hover {
+  color: inherit;
+  text-decoration: none;
+}
+.rendered_html {
+  color: #000;
+  /* any extras will just be numbers: */
+}
+
+
+
+.rendered_html :link {
+  text-decoration: underline;
+}
+.rendered_html :visited {
+  text-decoration: underline;
+}
+
+
+
+
+
+
+.rendered_html h1:first-child {
+  margin-top: 0.538em;
+}
+.rendered_html h2:first-child {
+  margin-top: 0.636em;
+}
+.rendered_html h3:first-child {
+  margin-top: 0.777em;
+}
+.rendered_html h4:first-child {
+  margin-top: 1em;
+}
+.rendered_html h5:first-child {
+  margin-top: 1em;
+}
+.rendered_html h6:first-child {
+  margin-top: 1em;
+}
+
+
+
+
+
+
+
+
+.rendered_html * + ul {
+  margin-top: 1em;
+}
+.rendered_html * + ol {
+  margin-top: 1em;
+}
+
+
+.rendered_html pre,
+
+
+
+.rendered_html tr,
+.rendered_html th,
+
+.rendered_html td,
+
+
+.rendered_html * + table {
+  margin-top: 1em;
+}
+
+.rendered_html * + p {
+  margin-top: 1em;
+}
+
+.rendered_html * + img {
+  margin-top: 1em;
+}
+.rendered_html img,
+
+.rendered_html img.unconfined,
+
+div.text_cell {
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: horizontal;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+@media (max-width: 540px) {
+  div.text_cell &gt; div.prompt {
+    display: none;
+  }
+}
+div.text_cell_render {
+  /*font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;*/
+  outline: none;
+  resize: none;
+  width: inherit;
+  border-style: none;
+  padding: 0.5em 0.5em 0.5em 0.4em;
+  color: #000;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+a.anchor-link:link {
+  text-decoration: none;
+  padding: 0px 20px;
+  visibility: hidden;
+}
+h1:hover .anchor-link,
+h2:hover .anchor-link,
+h3:hover .anchor-link,
+h4:hover .anchor-link,
+h5:hover .anchor-link,
+h6:hover .anchor-link {
+  visibility: visible;
+}
+.text_cell.rendered .input_area {
+  display: none;
+}
+.text_cell.rendered 
+.text_cell.unrendered .text_cell_render {
+  display: none;
+}
+.cm-header-1,
+.cm-header-2,
+.cm-header-3,
+.cm-header-4,
+.cm-header-5,
+.cm-header-6 {
+  font-weight: bold;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.cm-header-1 {
+  font-size: 185.7%;
+}
+.cm-header-2 {
+  font-size: 157.1%;
+}
+.cm-header-3 {
+  font-size: 128.6%;
+}
+.cm-header-4 {
+  font-size: 110%;
+}
+.cm-header-5 {
+  font-size: 100%;
+  font-style: italic;
+}
+.cm-header-6 {
+  font-size: 100%;
+  font-style: italic;
+}
+&lt;/style&gt;
+&lt;style type="text/css"&gt;.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .ch { color: #408080; font-style: italic } /* Comment.Hashbang */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #888888 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0044DD } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mb { color: #666666 } /* Literal.Number.Bin */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sa { color: #BA2121 } /* Literal.String.Affix */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .dl { color: #BA2121 } /* Literal.String.Delimiter */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .fm { color: #0000FF } /* Name.Function.Magic */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .vm { color: #19177C } /* Name.Variable.Magic */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */&lt;/style&gt;
+&lt;style type="text/css"&gt;
+/* Temporary definitions which will become obsolete with Notebook release 5.0 */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-bold { font-weight: bold; }
+&lt;/style&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h1 id="Diagnosis-of-cancer"&gt;Diagnosis of cancer&lt;a class="anchor-link" href="#Diagnosis-of-cancer"&gt;¶&lt;/a&gt;&lt;/h1&gt;&lt;p&gt;In this post I will describe how to build a deep neural network that can predict whether a tumor is malignant or benign. In the earlier &lt;a href="https://nathdip.github.io/cancer%20diagnosis%20I.html"&gt;post&lt;/a&gt;, we have looked into how we can use a linear classifier and just two features to classify the different tumors. However with the large number of features at our disposal a logical way to get the best classification is to train a neural network.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h2 id="Designing-a-deep-neural-network."&gt;Designing a deep neural network.&lt;a class="anchor-link" href="#Designing-a-deep-neural-network."&gt;¶&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Neural networks consists of network of interconnected nodes or neurons as it is inspired by connection among neurons in the brain. The various features form the input layer of neuron. There is also another set of neuron(s) which form the output layer. Connecting the input layer and the output layer are the hidden layer. Depending upon the application we might have several such hidden layers. Deep neural networks consists of several such hidden layers.&lt;/p&gt;
+&lt;p&gt;In this particular case we will have a neural network which has an input layer of size number of features. Let us have a look at our data again.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In [1]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+&lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;numpy&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;np&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pandas&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;pd&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;matplotlib.pyplot&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;plt&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In [3]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+&lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;dataset&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pd&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read_csv&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'data.csv'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;dataset&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;head&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="output_wrapper"&gt;
+&lt;div class="output"&gt;
+&lt;div class="output_area"&gt;
+&lt;div class="prompt output_prompt"&gt;Out[3]:&lt;/div&gt;
+&lt;div class="output_html rendered_html output_subarea output_execute_result"&gt;
+&lt;div&gt;
+&lt;style scoped=""&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+&lt;/style&gt;
+&lt;table border="1" class="dataframe"&gt;
+&lt;thead&gt;
+&lt;tr style="text-align: right;"&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;th&gt;id&lt;/th&gt;
+&lt;th&gt;diagnosis&lt;/th&gt;
+&lt;th&gt;radius_mean&lt;/th&gt;
+&lt;th&gt;texture_mean&lt;/th&gt;
+&lt;th&gt;perimeter_mean&lt;/th&gt;
+&lt;th&gt;area_mean&lt;/th&gt;
+&lt;th&gt;smoothness_mean&lt;/th&gt;
+&lt;th&gt;compactness_mean&lt;/th&gt;
+&lt;th&gt;concavity_mean&lt;/th&gt;
+&lt;th&gt;concave points_mean&lt;/th&gt;
+&lt;th&gt;...&lt;/th&gt;
+&lt;th&gt;texture_worst&lt;/th&gt;
+&lt;th&gt;perimeter_worst&lt;/th&gt;
+&lt;th&gt;area_worst&lt;/th&gt;
+&lt;th&gt;smoothness_worst&lt;/th&gt;
+&lt;th&gt;compactness_worst&lt;/th&gt;
+&lt;th&gt;concavity_worst&lt;/th&gt;
+&lt;th&gt;concave points_worst&lt;/th&gt;
+&lt;th&gt;symmetry_worst&lt;/th&gt;
+&lt;th&gt;fractal_dimension_worst&lt;/th&gt;
+&lt;th&gt;Unnamed: 32&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;th&gt;0&lt;/th&gt;
+&lt;td&gt;842302&lt;/td&gt;
+&lt;td&gt;M&lt;/td&gt;
+&lt;td&gt;17.99&lt;/td&gt;
+&lt;td&gt;10.38&lt;/td&gt;
+&lt;td&gt;122.80&lt;/td&gt;
+&lt;td&gt;1001.0&lt;/td&gt;
+&lt;td&gt;0.11840&lt;/td&gt;
+&lt;td&gt;0.27760&lt;/td&gt;
+&lt;td&gt;0.30010&lt;/td&gt;
+&lt;td&gt;0.14710&lt;/td&gt;
+&lt;td&gt;...&lt;/td&gt;
+&lt;td&gt;17.33&lt;/td&gt;
+&lt;td&gt;184.60&lt;/td&gt;
+&lt;td&gt;2019.0&lt;/td&gt;
+&lt;td&gt;0.1622&lt;/td&gt;
+&lt;td&gt;0.6656&lt;/td&gt;
+&lt;td&gt;0.7119&lt;/td&gt;
+&lt;td&gt;0.2654&lt;/td&gt;
+&lt;td&gt;0.4601&lt;/td&gt;
+&lt;td&gt;0.11890&lt;/td&gt;
+&lt;td&gt;NaN&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;th&gt;1&lt;/th&gt;
+&lt;td&gt;842517&lt;/td&gt;
+&lt;td&gt;M&lt;/td&gt;
+&lt;td&gt;20.57&lt;/td&gt;
+&lt;td&gt;17.77&lt;/td&gt;
+&lt;td&gt;132.90&lt;/td&gt;
+&lt;td&gt;1326.0&lt;/td&gt;
+&lt;td&gt;0.08474&lt;/td&gt;
+&lt;td&gt;0.07864&lt;/td&gt;
+&lt;td&gt;0.08690&lt;/td&gt;
+&lt;td&gt;0.07017&lt;/td&gt;
+&lt;td&gt;...&lt;/td&gt;
+&lt;td&gt;23.41&lt;/td&gt;
+&lt;td&gt;158.80&lt;/td&gt;
+&lt;td&gt;1956.0&lt;/td&gt;
+&lt;td&gt;0.1238&lt;/td&gt;
+&lt;td&gt;0.1866&lt;/td&gt;
+&lt;td&gt;0.2416&lt;/td&gt;
+&lt;td&gt;0.1860&lt;/td&gt;
+&lt;td&gt;0.2750&lt;/td&gt;
+&lt;td&gt;0.08902&lt;/td&gt;
+&lt;td&gt;NaN&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;th&gt;2&lt;/th&gt;
+&lt;td&gt;84300903&lt;/td&gt;
+&lt;td&gt;M&lt;/td&gt;
+&lt;td&gt;19.69&lt;/td&gt;
+&lt;td&gt;21.25&lt;/td&gt;
+&lt;td&gt;130.00&lt;/td&gt;
+&lt;td&gt;1203.0&lt;/td&gt;
+&lt;td&gt;0.10960&lt;/td&gt;
+&lt;td&gt;0.15990&lt;/td&gt;
+&lt;td&gt;0.19740&lt;/td&gt;
+&lt;td&gt;0.12790&lt;/td&gt;
+&lt;td&gt;...&lt;/td&gt;
+&lt;td&gt;25.53&lt;/td&gt;
+&lt;td&gt;152.50&lt;/td&gt;
+&lt;td&gt;1709.0&lt;/td&gt;
+&lt;td&gt;0.1444&lt;/td&gt;
+&lt;td&gt;0.4245&lt;/td&gt;
+&lt;td&gt;0.4504&lt;/td&gt;
+&lt;td&gt;0.2430&lt;/td&gt;
+&lt;td&gt;0.3613&lt;/td&gt;
+&lt;td&gt;0.08758&lt;/td&gt;
+&lt;td&gt;NaN&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;th&gt;3&lt;/th&gt;
+&lt;td&gt;84348301&lt;/td&gt;
+&lt;td&gt;M&lt;/td&gt;
+&lt;td&gt;11.42&lt;/td&gt;
+&lt;td&gt;20.38&lt;/td&gt;
+&lt;td&gt;77.58&lt;/td&gt;
+&lt;td&gt;386.1&lt;/td&gt;
+&lt;td&gt;0.14250&lt;/td&gt;
+&lt;td&gt;0.28390&lt;/td&gt;
+&lt;td&gt;0.24140&lt;/td&gt;
+&lt;td&gt;0.10520&lt;/td&gt;
+&lt;td&gt;...&lt;/td&gt;
+&lt;td&gt;26.50&lt;/td&gt;
+&lt;td&gt;98.87&lt;/td&gt;
+&lt;td&gt;567.7&lt;/td&gt;
+&lt;td&gt;0.2098&lt;/td&gt;
+&lt;td&gt;0.8663&lt;/td&gt;
+&lt;td&gt;0.6869&lt;/td&gt;
+&lt;td&gt;0.2575&lt;/td&gt;
+&lt;td&gt;0.6638&lt;/td&gt;
+&lt;td&gt;0.17300&lt;/td&gt;
+&lt;td&gt;NaN&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;th&gt;4&lt;/th&gt;
+&lt;td&gt;84358402&lt;/td&gt;
+&lt;td&gt;M&lt;/td&gt;
+&lt;td&gt;20.29&lt;/td&gt;
+&lt;td&gt;14.34&lt;/td&gt;
+&lt;td&gt;135.10&lt;/td&gt;
+&lt;td&gt;1297.0&lt;/td&gt;
+&lt;td&gt;0.10030&lt;/td&gt;
+&lt;td&gt;0.13280&lt;/td&gt;
+&lt;td&gt;0.19800&lt;/td&gt;
+&lt;td&gt;0.10430&lt;/td&gt;
+&lt;td&gt;...&lt;/td&gt;
+&lt;td&gt;16.67&lt;/td&gt;
+&lt;td&gt;152.20&lt;/td&gt;
+&lt;td&gt;1575.0&lt;/td&gt;
+&lt;td&gt;0.1374&lt;/td&gt;
+&lt;td&gt;0.2050&lt;/td&gt;
+&lt;td&gt;0.4000&lt;/td&gt;
+&lt;td&gt;0.1625&lt;/td&gt;
+&lt;td&gt;0.2364&lt;/td&gt;
+&lt;td&gt;0.07678&lt;/td&gt;
+&lt;td&gt;NaN&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;th&gt;5&lt;/th&gt;
+&lt;td&gt;843786&lt;/td&gt;
+&lt;td&gt;M&lt;/td&gt;
+&lt;td&gt;12.45&lt;/td&gt;
+&lt;td&gt;15.70&lt;/td&gt;
+&lt;td&gt;82.57&lt;/td&gt;
+&lt;td&gt;477.1&lt;/td&gt;
+&lt;td&gt;0.12780&lt;/td&gt;
+&lt;td&gt;0.17000&lt;/td&gt;
+&lt;td&gt;0.15780&lt;/td&gt;
+&lt;td&gt;0.08089&lt;/td&gt;
+&lt;td&gt;...&lt;/td&gt;
+&lt;td&gt;23.75&lt;/td&gt;
+&lt;td&gt;103.40&lt;/td&gt;
+&lt;td&gt;741.6&lt;/td&gt;
+&lt;td&gt;0.1791&lt;/td&gt;
+&lt;td&gt;0.5249&lt;/td&gt;
+&lt;td&gt;0.5355&lt;/td&gt;
+&lt;td&gt;0.1741&lt;/td&gt;
+&lt;td&gt;0.3985&lt;/td&gt;
+&lt;td&gt;0.12440&lt;/td&gt;
+&lt;td&gt;NaN&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;th&gt;6&lt;/th&gt;
+&lt;td&gt;844359&lt;/td&gt;
+&lt;td&gt;M&lt;/td&gt;
+&lt;td&gt;18.25&lt;/td&gt;
+&lt;td&gt;19.98&lt;/td&gt;
+&lt;td&gt;119.60&lt;/td&gt;
+&lt;td&gt;1040.0&lt;/td&gt;
+&lt;td&gt;0.09463&lt;/td&gt;
+&lt;td&gt;0.10900&lt;/td&gt;
+&lt;td&gt;0.11270&lt;/td&gt;
+&lt;td&gt;0.07400&lt;/td&gt;
+&lt;td&gt;...&lt;/td&gt;
+&lt;td&gt;27.66&lt;/td&gt;
+&lt;td&gt;153.20&lt;/td&gt;
+&lt;td&gt;1606.0&lt;/td&gt;
+&lt;td&gt;0.1442&lt;/td&gt;
+&lt;td&gt;0.2576&lt;/td&gt;
+&lt;td&gt;0.3784&lt;/td&gt;
+&lt;td&gt;0.1932&lt;/td&gt;
+&lt;td&gt;0.3063&lt;/td&gt;
+&lt;td&gt;0.08368&lt;/td&gt;
+&lt;td&gt;NaN&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;th&gt;7&lt;/th&gt;
+&lt;td&gt;84458202&lt;/td&gt;
+&lt;td&gt;M&lt;/td&gt;
+&lt;td&gt;13.71&lt;/td&gt;
+&lt;td&gt;20.83&lt;/td&gt;
+&lt;td&gt;90.20&lt;/td&gt;
+&lt;td&gt;577.9&lt;/td&gt;
+&lt;td&gt;0.11890&lt;/td&gt;
+&lt;td&gt;0.16450&lt;/td&gt;
+&lt;td&gt;0.09366&lt;/td&gt;
+&lt;td&gt;0.05985&lt;/td&gt;
+&lt;td&gt;...&lt;/td&gt;
+&lt;td&gt;28.14&lt;/td&gt;
+&lt;td&gt;110.60&lt;/td&gt;
+&lt;td&gt;897.0&lt;/td&gt;
+&lt;td&gt;0.1654&lt;/td&gt;
+&lt;td&gt;0.3682&lt;/td&gt;
+&lt;td&gt;0.2678&lt;/td&gt;
+&lt;td&gt;0.1556&lt;/td&gt;
+&lt;td&gt;0.3196&lt;/td&gt;
+&lt;td&gt;0.11510&lt;/td&gt;
+&lt;td&gt;NaN&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;th&gt;8&lt;/th&gt;
+&lt;td&gt;844981&lt;/td&gt;
+&lt;td&gt;M&lt;/td&gt;
+&lt;td&gt;13.00&lt;/td&gt;
+&lt;td&gt;21.82&lt;/td&gt;
+&lt;td&gt;87.50&lt;/td&gt;
+&lt;td&gt;519.8&lt;/td&gt;
+&lt;td&gt;0.12730&lt;/td&gt;
+&lt;td&gt;0.19320&lt;/td&gt;
+&lt;td&gt;0.18590&lt;/td&gt;
+&lt;td&gt;0.09353&lt;/td&gt;
+&lt;td&gt;...&lt;/td&gt;
+&lt;td&gt;30.73&lt;/td&gt;
+&lt;td&gt;106.20&lt;/td&gt;
+&lt;td&gt;739.3&lt;/td&gt;
+&lt;td&gt;0.1703&lt;/td&gt;
+&lt;td&gt;0.5401&lt;/td&gt;
+&lt;td&gt;0.5390&lt;/td&gt;
+&lt;td&gt;0.2060&lt;/td&gt;
+&lt;td&gt;0.4378&lt;/td&gt;
+&lt;td&gt;0.10720&lt;/td&gt;
+&lt;td&gt;NaN&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;th&gt;9&lt;/th&gt;
+&lt;td&gt;84501001&lt;/td&gt;
+&lt;td&gt;M&lt;/td&gt;
+&lt;td&gt;12.46&lt;/td&gt;
+&lt;td&gt;24.04&lt;/td&gt;
+&lt;td&gt;83.97&lt;/td&gt;
+&lt;td&gt;475.9&lt;/td&gt;
+&lt;td&gt;0.11860&lt;/td&gt;
+&lt;td&gt;0.23960&lt;/td&gt;
+&lt;td&gt;0.22730&lt;/td&gt;
+&lt;td&gt;0.08543&lt;/td&gt;
+&lt;td&gt;...&lt;/td&gt;
+&lt;td&gt;40.68&lt;/td&gt;
+&lt;td&gt;97.65&lt;/td&gt;
+&lt;td&gt;711.4&lt;/td&gt;
+&lt;td&gt;0.1853&lt;/td&gt;
+&lt;td&gt;1.0580&lt;/td&gt;
+&lt;td&gt;1.1050&lt;/td&gt;
+&lt;td&gt;0.2210&lt;/td&gt;
+&lt;td&gt;0.4366&lt;/td&gt;
+&lt;td&gt;0.20750&lt;/td&gt;
+&lt;td&gt;NaN&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;10 rows × 33 columns&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;p&gt;We need to drop the last column of the dataframe as it has only 'NaN' as entries&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In [4]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+&lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;dataset&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;dataset&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;drop&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;columns&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'Unnamed: 32'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;axis&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In [5]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+&lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;dataset&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;head&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="output_wrapper"&gt;
+&lt;div class="output"&gt;
+&lt;div class="output_area"&gt;
+&lt;div class="prompt output_prompt"&gt;Out[5]:&lt;/div&gt;
+&lt;div class="output_html rendered_html output_subarea output_execute_result"&gt;
+&lt;div&gt;
+&lt;style scoped=""&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+&lt;/style&gt;
+&lt;table border="1" class="dataframe"&gt;
+&lt;thead&gt;
+&lt;tr style="text-align: right;"&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;th&gt;id&lt;/th&gt;
+&lt;th&gt;diagnosis&lt;/th&gt;
+&lt;th&gt;radius_mean&lt;/th&gt;
+&lt;th&gt;texture_mean&lt;/th&gt;
+&lt;th&gt;perimeter_mean&lt;/th&gt;
+&lt;th&gt;area_mean&lt;/th&gt;
+&lt;th&gt;smoothness_mean&lt;/th&gt;
+&lt;th&gt;compactness_mean&lt;/th&gt;
+&lt;th&gt;concavity_mean&lt;/th&gt;
+&lt;th&gt;concave points_mean&lt;/th&gt;
+&lt;th&gt;...&lt;/th&gt;
+&lt;th&gt;radius_worst&lt;/th&gt;
+&lt;th&gt;texture_worst&lt;/th&gt;
+&lt;th&gt;perimeter_worst&lt;/th&gt;
+&lt;th&gt;area_worst&lt;/th&gt;
+&lt;th&gt;smoothness_worst&lt;/th&gt;
+&lt;th&gt;compactness_worst&lt;/th&gt;
+&lt;th&gt;concavity_worst&lt;/th&gt;
+&lt;th&gt;concave points_worst&lt;/th&gt;
+&lt;th&gt;symmetry_worst&lt;/th&gt;
+&lt;th&gt;fractal_dimension_worst&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;th&gt;0&lt;/th&gt;
+&lt;td&gt;842302&lt;/td&gt;
+&lt;td&gt;M&lt;/td&gt;
+&lt;td&gt;17.99&lt;/td&gt;
+&lt;td&gt;10.38&lt;/td&gt;
+&lt;td&gt;122.80&lt;/td&gt;
+&lt;td&gt;1001.0&lt;/td&gt;
+&lt;td&gt;0.11840&lt;/td&gt;
+&lt;td&gt;0.27760&lt;/td&gt;
+&lt;td&gt;0.3001&lt;/td&gt;
+&lt;td&gt;0.14710&lt;/td&gt;
+&lt;td&gt;...&lt;/td&gt;
+&lt;td&gt;25.38&lt;/td&gt;
+&lt;td&gt;17.33&lt;/td&gt;
+&lt;td&gt;184.60&lt;/td&gt;
+&lt;td&gt;2019.0&lt;/td&gt;
+&lt;td&gt;0.1622&lt;/td&gt;
+&lt;td&gt;0.6656&lt;/td&gt;
+&lt;td&gt;0.7119&lt;/td&gt;
+&lt;td&gt;0.2654&lt;/td&gt;
+&lt;td&gt;0.4601&lt;/td&gt;
+&lt;td&gt;0.11890&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;th&gt;1&lt;/th&gt;
+&lt;td&gt;842517&lt;/td&gt;
+&lt;td&gt;M&lt;/td&gt;
+&lt;td&gt;20.57&lt;/td&gt;
+&lt;td&gt;17.77&lt;/td&gt;
+&lt;td&gt;132.90&lt;/td&gt;
+&lt;td&gt;1326.0&lt;/td&gt;
+&lt;td&gt;0.08474&lt;/td&gt;
+&lt;td&gt;0.07864&lt;/td&gt;
+&lt;td&gt;0.0869&lt;/td&gt;
+&lt;td&gt;0.07017&lt;/td&gt;
+&lt;td&gt;...&lt;/td&gt;
+&lt;td&gt;24.99&lt;/td&gt;
+&lt;td&gt;23.41&lt;/td&gt;
+&lt;td&gt;158.80&lt;/td&gt;
+&lt;td&gt;1956.0&lt;/td&gt;
+&lt;td&gt;0.1238&lt;/td&gt;
+&lt;td&gt;0.1866&lt;/td&gt;
+&lt;td&gt;0.2416&lt;/td&gt;
+&lt;td&gt;0.1860&lt;/td&gt;
+&lt;td&gt;0.2750&lt;/td&gt;
+&lt;td&gt;0.08902&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;th&gt;2&lt;/th&gt;
+&lt;td&gt;84300903&lt;/td&gt;
+&lt;td&gt;M&lt;/td&gt;
+&lt;td&gt;19.69&lt;/td&gt;
+&lt;td&gt;21.25&lt;/td&gt;
+&lt;td&gt;130.00&lt;/td&gt;
+&lt;td&gt;1203.0&lt;/td&gt;
+&lt;td&gt;0.10960&lt;/td&gt;
+&lt;td&gt;0.15990&lt;/td&gt;
+&lt;td&gt;0.1974&lt;/td&gt;
+&lt;td&gt;0.12790&lt;/td&gt;
+&lt;td&gt;...&lt;/td&gt;
+&lt;td&gt;23.57&lt;/td&gt;
+&lt;td&gt;25.53&lt;/td&gt;
+&lt;td&gt;152.50&lt;/td&gt;
+&lt;td&gt;1709.0&lt;/td&gt;
+&lt;td&gt;0.1444&lt;/td&gt;
+&lt;td&gt;0.4245&lt;/td&gt;
+&lt;td&gt;0.4504&lt;/td&gt;
+&lt;td&gt;0.2430&lt;/td&gt;
+&lt;td&gt;0.3613&lt;/td&gt;
+&lt;td&gt;0.08758&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;th&gt;3&lt;/th&gt;
+&lt;td&gt;84348301&lt;/td&gt;
+&lt;td&gt;M&lt;/td&gt;
+&lt;td&gt;11.42&lt;/td&gt;
+&lt;td&gt;20.38&lt;/td&gt;
+&lt;td&gt;77.58&lt;/td&gt;
+&lt;td&gt;386.1&lt;/td&gt;
+&lt;td&gt;0.14250&lt;/td&gt;
+&lt;td&gt;0.28390&lt;/td&gt;
+&lt;td&gt;0.2414&lt;/td&gt;
+&lt;td&gt;0.10520&lt;/td&gt;
+&lt;td&gt;...&lt;/td&gt;
+&lt;td&gt;14.91&lt;/td&gt;
+&lt;td&gt;26.50&lt;/td&gt;
+&lt;td&gt;98.87&lt;/td&gt;
+&lt;td&gt;567.7&lt;/td&gt;
+&lt;td&gt;0.2098&lt;/td&gt;
+&lt;td&gt;0.8663&lt;/td&gt;
+&lt;td&gt;0.6869&lt;/td&gt;
+&lt;td&gt;0.2575&lt;/td&gt;
+&lt;td&gt;0.6638&lt;/td&gt;
+&lt;td&gt;0.17300&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;th&gt;4&lt;/th&gt;
+&lt;td&gt;84358402&lt;/td&gt;
+&lt;td&gt;M&lt;/td&gt;
+&lt;td&gt;20.29&lt;/td&gt;
+&lt;td&gt;14.34&lt;/td&gt;
+&lt;td&gt;135.10&lt;/td&gt;
+&lt;td&gt;1297.0&lt;/td&gt;
+&lt;td&gt;0.10030&lt;/td&gt;
+&lt;td&gt;0.13280&lt;/td&gt;
+&lt;td&gt;0.1980&lt;/td&gt;
+&lt;td&gt;0.10430&lt;/td&gt;
+&lt;td&gt;...&lt;/td&gt;
+&lt;td&gt;22.54&lt;/td&gt;
+&lt;td&gt;16.67&lt;/td&gt;
+&lt;td&gt;152.20&lt;/td&gt;
+&lt;td&gt;1575.0&lt;/td&gt;
+&lt;td&gt;0.1374&lt;/td&gt;
+&lt;td&gt;0.2050&lt;/td&gt;
+&lt;td&gt;0.4000&lt;/td&gt;
+&lt;td&gt;0.1625&lt;/td&gt;
+&lt;td&gt;0.2364&lt;/td&gt;
+&lt;td&gt;0.07678&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;5 rows × 32 columns&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;p&gt;Now let us look at what will constitute as features which will be the input layer of our neural network. Clearly the id of the patient should play no role in the diagnosis and we can ignore it for the rest of the discussion. The column diagnosis corresponds to the output of the the neural network which we will use for the purpose of training our neural network. We can now split our data into input (X) and output (y) components.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In [17]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+&lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;features&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;list&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;dataset&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;features&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;delete&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;features&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;span class="n"&gt;X&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;dataset&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;loc&lt;/span&gt;&lt;span class="p"&gt;[:,&lt;/span&gt; &lt;span class="n"&gt;features&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;values&lt;/span&gt;
+&lt;span class="n"&gt;y&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;dataset&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;loc&lt;/span&gt;&lt;span class="p"&gt;[:,&lt;/span&gt; &lt;span class="s1"&gt;'diagnosis'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;values&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;p&gt;Now that we have the dataset a little preprocessing needs to be done in order to able to train the neural network. First we need to feature scale all the inputs. We will use a standard scaler in this case which basically converts all the inputs which has a zero mean and a unit standard deviation.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In [20]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+&lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.preprocessing&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;StandardScaler&lt;/span&gt;
+&lt;span class="n"&gt;sc&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt;  &lt;span class="n"&gt;StandardScaler&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;X&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sc&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fit_transform&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;X&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;p&gt;The output vector y which is the diagnosis has two classes 'M' for malignant and 'B' for benign. We need to encode it into a numeric values such that our classifier can understand&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In [22]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+&lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.preprocessing&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;LabelEncoder&lt;/span&gt;
+&lt;span class="n"&gt;labelencode&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;LabelEncoder&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;y&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;labelencode&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fit_transform&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;p&gt;Now that we have our data processed and ready, we are ready to build our classifier. We will be using Keras which is an API for packages for advanced machine learning like TensorFlow, Theano etc. We will be using the Keras API with the TensorFlow backend. As a first trial we will split the X and y data set into training and test set so that evaluate the performance of our neural network.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In [24]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+&lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.model_selection&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;train_test_split&lt;/span&gt;
+&lt;span class="n"&gt;X_train&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;X_test&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y_train&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y_test&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;train_test_split&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;X&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;test_size&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mf"&gt;0.2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;random_state&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;p&gt;Now we will import all the libraries required to build our neural network.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In [44]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+&lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;keras.models&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Sequential&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;keras.layers&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Dense&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;keras.layers&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Dropout&lt;/span&gt;
+&lt;span class="n"&gt;X_train&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;shape&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="output_wrapper"&gt;
+&lt;div class="output"&gt;
+&lt;div class="output_area"&gt;
+&lt;div class="prompt output_prompt"&gt;Out[44]:&lt;/div&gt;
+&lt;div class="output_text output_subarea output_execute_result"&gt;
+&lt;pre&gt;(455, 30)&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;p&gt;Using Sequential and Dense we will build our classifier and we will be able to add layers to our network.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In [52]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+&lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;classifier&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Sequential&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="c1"&gt;#Add the input layer and first hidden layer&lt;/span&gt;
+&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dense&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;units&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;kernel_initializer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'uniform'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;activation&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'relu'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;input_dim&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;30&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  &lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dropout&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;rate&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="c1"&gt;#Add second hidden layer&lt;/span&gt;
+&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dense&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;units&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;kernel_initializer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'uniform'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;activation&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'relu'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  &lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dropout&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;rate&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+&lt;span class="c1"&gt;#Add third hidden layer&lt;/span&gt;
+&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dense&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;units&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;kernel_initializer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'uniform'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;activation&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'relu'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  &lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dropout&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;rate&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+&lt;span class="c1"&gt;#Add fourth hidden layer&lt;/span&gt;
+&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dense&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;units&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;kernel_initializer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'uniform'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;activation&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'relu'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  &lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dropout&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;rate&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+&lt;span class="c1"&gt;#Add fifth hidden layer&lt;/span&gt;
+&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dense&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;units&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;kernel_initializer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'uniform'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;activation&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'relu'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  &lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dropout&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;rate&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+&lt;span class="c1"&gt;#Add sixth hidden layer&lt;/span&gt;
+&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dense&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;units&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;kernel_initializer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'uniform'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;activation&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'relu'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  &lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dropout&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;rate&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+&lt;span class="c1"&gt;#Add seventh hidden layer&lt;/span&gt;
+&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dense&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;units&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;kernel_initializer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'uniform'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;activation&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'relu'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  &lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dropout&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;rate&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+&lt;span class="c1"&gt;#Add eighth hidden layer&lt;/span&gt;
+&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dense&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;units&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;kernel_initializer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'uniform'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;activation&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'sigmoid'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  &lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Compiling the ANN&lt;/span&gt;
+&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;compile&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;optimizer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'adam'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;loss&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'binary_crossentropy'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;metrics&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'accuracy'&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Fitting the ANN to the Training set&lt;/span&gt;
+&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;X_train&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y_train&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;batch_size&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;epochs&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="output_wrapper"&gt;
+&lt;div class="output"&gt;
+&lt;div class="output_area"&gt;
+&lt;div class="prompt"&gt;&lt;/div&gt;
+&lt;div class="output_subarea output_stream output_stdout output_text"&gt;
+&lt;pre&gt;Epoch 1/100
+455/455 [==============================] - 0s - loss: 0.6902 - acc: 0.6374     
+Epoch 2/100
+455/455 [==============================] - 0s - loss: 0.6769 - acc: 0.6374     
+Epoch 3/100
+455/455 [==============================] - 0s - loss: 0.4298 - acc: 0.6374     
+Epoch 4/100
+455/455 [==============================] - 0s - loss: 0.3300 - acc: 0.6615     
+Epoch 5/100
+455/455 [==============================] - 0s - loss: 0.2823 - acc: 0.9758     
+Epoch 6/100
+455/455 [==============================] - 0s - loss: 0.2694 - acc: 0.9846     
+Epoch 7/100
+455/455 [==============================] - 0s - loss: 0.2040 - acc: 0.9890     
+Epoch 8/100
+455/455 [==============================] - 0s - loss: 0.1185 - acc: 0.9802     
+Epoch 9/100
+455/455 [==============================] - 0s - loss: 0.0781 - acc: 0.9890     
+Epoch 10/100
+455/455 [==============================] - 0s - loss: 0.0689 - acc: 0.9868     
+Epoch 11/100
+455/455 [==============================] - 0s - loss: 0.0767 - acc: 0.9868     
+Epoch 12/100
+455/455 [==============================] - 0s - loss: 0.0662 - acc: 0.9824     
+Epoch 13/100
+455/455 [==============================] - 0s - loss: 0.0563 - acc: 0.9890     
+Epoch 14/100
+455/455 [==============================] - 0s - loss: 0.0559 - acc: 0.9890     
+Epoch 15/100
+455/455 [==============================] - 0s - loss: 0.0607 - acc: 0.9868     
+Epoch 16/100
+455/455 [==============================] - 0s - loss: 0.0478 - acc: 0.9912     
+Epoch 17/100
+455/455 [==============================] - 0s - loss: 0.0471 - acc: 0.9890     
+Epoch 18/100
+455/455 [==============================] - 0s - loss: 0.0499 - acc: 0.9890     
+Epoch 19/100
+455/455 [==============================] - 0s - loss: 0.0412 - acc: 0.9912     
+Epoch 20/100
+455/455 [==============================] - 0s - loss: 0.0460 - acc: 0.9890     
+Epoch 21/100
+455/455 [==============================] - 0s - loss: 0.0443 - acc: 0.9912     
+Epoch 22/100
+455/455 [==============================] - 0s - loss: 0.0453 - acc: 0.9890     
+Epoch 23/100
+455/455 [==============================] - 0s - loss: 0.0405 - acc: 0.9912     
+Epoch 24/100
+455/455 [==============================] - 0s - loss: 0.0434 - acc: 0.9912     
+Epoch 25/100
+455/455 [==============================] - 0s - loss: 0.0395 - acc: 0.9912     
+Epoch 26/100
+455/455 [==============================] - 0s - loss: 0.0555 - acc: 0.9890     
+Epoch 27/100
+455/455 [==============================] - 0s - loss: 0.0518 - acc: 0.9868     
+Epoch 28/100
+455/455 [==============================] - 0s - loss: 0.0354 - acc: 0.9912     
+Epoch 29/100
+455/455 [==============================] - 0s - loss: 0.0410 - acc: 0.9890     
+Epoch 30/100
+455/455 [==============================] - 0s - loss: 0.0570 - acc: 0.9890     
+Epoch 31/100
+455/455 [==============================] - 0s - loss: 0.0654 - acc: 0.9758     
+Epoch 32/100
+455/455 [==============================] - 0s - loss: 0.0507 - acc: 0.9824     
+Epoch 33/100
+455/455 [==============================] - 0s - loss: 0.0456 - acc: 0.9890     
+Epoch 34/100
+455/455 [==============================] - 0s - loss: 0.0410 - acc: 0.9890     
+Epoch 35/100
+455/455 [==============================] - 0s - loss: 0.0413 - acc: 0.9890     
+Epoch 36/100
+455/455 [==============================] - 0s - loss: 0.0377 - acc: 0.9912     
+Epoch 37/100
+455/455 [==============================] - 0s - loss: 0.0375 - acc: 0.9890     
+Epoch 38/100
+455/455 [==============================] - 0s - loss: 0.0293 - acc: 0.9912     
+Epoch 39/100
+455/455 [==============================] - 0s - loss: 0.0417 - acc: 0.9890     
+Epoch 40/100
+455/455 [==============================] - 0s - loss: 0.0387 - acc: 0.9868     
+Epoch 41/100
+455/455 [==============================] - 0s - loss: 0.0350 - acc: 0.9912     
+Epoch 42/100
+455/455 [==============================] - 0s - loss: 0.0366 - acc: 0.9890     
+Epoch 43/100
+455/455 [==============================] - 0s - loss: 0.0358 - acc: 0.9912        
+Epoch 44/100
+455/455 [==============================] - 0s - loss: 0.0265 - acc: 0.9912        
+Epoch 45/100
+455/455 [==============================] - 0s - loss: 0.0357 - acc: 0.9890     
+Epoch 46/100
+455/455 [==============================] - 0s - loss: 0.0367 - acc: 0.9890     
+Epoch 47/100
+455/455 [==============================] - 0s - loss: 0.0283 - acc: 0.9934     
+Epoch 48/100
+455/455 [==============================] - 0s - loss: 0.0362 - acc: 0.9912     
+Epoch 49/100
+455/455 [==============================] - 0s - loss: 0.0314 - acc: 0.9912     
+Epoch 50/100
+455/455 [==============================] - 0s - loss: 0.0269 - acc: 0.9912     
+Epoch 51/100
+455/455 [==============================] - 0s - loss: 0.0253 - acc: 0.9912        
+Epoch 52/100
+455/455 [==============================] - 0s - loss: 0.0281 - acc: 0.9912        
+Epoch 53/100
+455/455 [==============================] - 0s - loss: 0.0624 - acc: 0.9802     
+Epoch 54/100
+455/455 [==============================] - 0s - loss: 0.1151 - acc: 0.9736     
+Epoch 55/100
+455/455 [==============================] - 0s - loss: 0.0578 - acc: 0.9802     
+Epoch 56/100
+455/455 [==============================] - 0s - loss: 0.0378 - acc: 0.9868     
+Epoch 57/100
+455/455 [==============================] - 0s - loss: 0.0378 - acc: 0.9868     
+Epoch 58/100
+455/455 [==============================] - 0s - loss: 0.0274 - acc: 0.9934     
+Epoch 59/100
+455/455 [==============================] - 0s - loss: 0.0342 - acc: 0.9890     
+Epoch 60/100
+455/455 [==============================] - 0s - loss: 0.0465 - acc: 0.9868     
+Epoch 61/100
+455/455 [==============================] - 0s - loss: 0.0428 - acc: 0.9868     
+Epoch 62/100
+455/455 [==============================] - 0s - loss: 0.0352 - acc: 0.9912        
+Epoch 63/100
+455/455 [==============================] - 0s - loss: 0.0327 - acc: 0.9868        
+Epoch 64/100
+455/455 [==============================] - 0s - loss: 0.0308 - acc: 0.9912     
+Epoch 65/100
+455/455 [==============================] - 0s - loss: 0.0288 - acc: 0.9912     
+Epoch 66/100
+455/455 [==============================] - 0s - loss: 0.0258 - acc: 0.9912     
+Epoch 67/100
+455/455 [==============================] - 0s - loss: 0.0214 - acc: 0.9934        
+Epoch 68/100
+455/455 [==============================] - 0s - loss: 0.0221 - acc: 0.9912        
+Epoch 69/100
+455/455 [==============================] - 0s - loss: 0.0210 - acc: 0.9934        
+Epoch 70/100
+455/455 [==============================] - 0s - loss: 0.0221 - acc: 0.9912     
+Epoch 71/100
+455/455 [==============================] - 0s - loss: 0.0092 - acc: 0.9978     
+Epoch 72/100
+455/455 [==============================] - 0s - loss: 0.0237 - acc: 0.9934        
+Epoch 73/100
+455/455 [==============================] - 0s - loss: 0.0139 - acc: 0.9956     
+Epoch 74/100
+455/455 [==============================] - 0s - loss: 0.0096 - acc: 0.9978     
+Epoch 75/100
+455/455 [==============================] - 0s - loss: 0.0110 - acc: 0.9956     
+Epoch 76/100
+455/455 [==============================] - 0s - loss: 0.0241 - acc: 0.9956     
+Epoch 77/100
+455/455 [==============================] - 0s - loss: 0.0141 - acc: 0.9978        
+Epoch 78/100
+455/455 [==============================] - 0s - loss: 0.0113 - acc: 0.9956     
+Epoch 79/100
+455/455 [==============================] - 0s - loss: 0.0071 - acc: 1.0000     
+Epoch 80/100
+455/455 [==============================] - 0s - loss: 0.0142 - acc: 0.9978     
+Epoch 81/100
+455/455 [==============================] - 0s - loss: 0.0044 - acc: 1.0000        
+Epoch 82/100
+455/455 [==============================] - 0s - loss: 0.0238 - acc: 0.9912     
+Epoch 83/100
+455/455 [==============================] - 0s - loss: 0.0282 - acc: 0.9912     
+Epoch 84/100
+455/455 [==============================] - 0s - loss: 0.0542 - acc: 0.9912        
+Epoch 85/100
+455/455 [==============================] - 0s - loss: 0.0377 - acc: 0.9912        
+Epoch 86/100
+455/455 [==============================] - 0s - loss: 0.0139 - acc: 0.9956     
+Epoch 87/100
+455/455 [==============================] - 0s - loss: 0.0138 - acc: 0.9956        
+Epoch 88/100
+455/455 [==============================] - 0s - loss: 0.0131 - acc: 0.9956        
+Epoch 89/100
+455/455 [==============================] - 0s - loss: 0.0081 - acc: 0.9978     
+Epoch 90/100
+455/455 [==============================] - 0s - loss: 0.0290 - acc: 0.9934     
+Epoch 91/100
+455/455 [==============================] - 0s - loss: 0.0085 - acc: 0.9978     
+Epoch 92/100
+455/455 [==============================] - 0s - loss: 0.0094 - acc: 0.9978     
+Epoch 93/100
+455/455 [==============================] - 0s - loss: 0.0060 - acc: 0.9978        
+Epoch 94/100
+455/455 [==============================] - 0s - loss: 0.0125 - acc: 0.9978        
+Epoch 95/100
+455/455 [==============================] - 0s - loss: 0.0118 - acc: 0.9956        
+Epoch 96/100
+455/455 [==============================] - 0s - loss: 0.0128 - acc: 0.9956     
+Epoch 97/100
+455/455 [==============================] - 0s - loss: 0.0123 - acc: 0.9956     
+Epoch 98/100
+455/455 [==============================] - 0s - loss: 0.0094 - acc: 0.9978     
+Epoch 99/100
+455/455 [==============================] - 0s - loss: 0.0034 - acc: 1.0000     
+Epoch 100/100
+455/455 [==============================] - 0s - loss: 0.0025 - acc: 1.0000        
+&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="output_area"&gt;
+&lt;div class="prompt output_prompt"&gt;Out[52]:&lt;/div&gt;
+&lt;div class="output_text output_subarea output_execute_result"&gt;
+&lt;pre&gt;&lt;keras.callbacks.history at 0x7f94e89fec50&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;p&gt;Our classifier seems to have a really good accuracy on the test set. But that might be just because of overfitting. The Dropout is used as a form of regularization while training our classifier. However in order to know the actual accuracy of our classifier we need to implement on the test set and check how .&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In [53]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+&lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# Predicting the Test set results&lt;/span&gt;
+&lt;span class="n"&gt;y_pred&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;predict&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;X_test&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;y_pred&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;y_pred&lt;/span&gt; &lt;span class="o"&gt;&gt;&lt;/span&gt; &lt;span class="mf"&gt;0.5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Making the Confusion Matrix&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.metrics&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;confusion_matrix&lt;/span&gt;
+&lt;span class="n"&gt;cm&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;confusion_matrix&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;y_test&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y_pred&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing code_cell rendered"&gt;
+&lt;div class="input"&gt;
+&lt;div class="prompt input_prompt"&gt;In [54]:&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+&lt;div class="input_area"&gt;
+&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;accuracy_cm&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cm&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;cm&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cm&lt;/span&gt;&lt;span class="p"&gt;)))&lt;/span&gt;
+&lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'The accuracy is : '&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;accuracy_cm&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="output_wrapper"&gt;
+&lt;div class="output"&gt;
+&lt;div class="output_area"&gt;
+&lt;div class="prompt"&gt;&lt;/div&gt;
+&lt;div class="output_subarea output_stream output_stdout output_text"&gt;
+&lt;pre&gt;The accuracy is :  0.964912280702
+&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;p&gt;This is not bad, our algorithm is able to distinguish between malignant and benign tumors with an accuracy of nearly 96.5%. Remember this dataset is not large but with the extensive number of features and a deep artificial neural network, we are able to make a very good prediction. We still have nearly 5% chance of getting it wrong. bUt for a first trial it is not bad.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script type="text/javascript"&gt;if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = '//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: 'center'," +
+        "    displayIndent: '0em'," +
+        "    showMathMenu: true," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['$','$'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        " linebreaks: { automatic: true, width: '95% container' }, " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'black ! important'} }" +
+        "    } " +
+        "}); ";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+&lt;/script&gt;
+</content><category term="python firsts"></category></entry><entry><title>Cancer Diagnosis-I</title><link href="https://nathdip.github.io/cancer%20diagnosis%20I.html" rel="alternate"></link><published>2017-12-12T15:34:00+01:00</published><updated>2017-12-12T15:34:00+01:00</updated><author><name>Dipankar</name></author><id>tag:nathdip.github.io,2017-12-12:/cancer diagnosis I.html</id><summary type="html">
 &lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
 &lt;/div&gt;
 &lt;div class="inner_cell"&gt;
@@ -8073,1997 +10064,6 @@ SVKHsyGUJEnqcDaEkiRJHe7/A7hGyHBoniI4AAAAAElFTkSuQmCC
 &lt;div class="inner_cell"&gt;
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
 &lt;p&gt;We plot that color coded diagnosis on top of the SOM. We can see that the SOM is not very successful in distinguishing between malignant and benign tumors. One might be able to use a larger number of neurons to distinguish between the diagnosis. However we can use a powerful machine learning technique knows as Deep Neural Networks to make a prediction of diagnosis based on the existing data. I will describe this in a different blog post.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-
-&lt;script type="text/javascript"&gt;if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
-    var mathjaxscript = document.createElement('script');
-    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
-    mathjaxscript.type = 'text/javascript';
-    mathjaxscript.src = '//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
-    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
-        "MathJax.Hub.Config({" +
-        "    config: ['MMLorHTML.js']," +
-        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
-        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
-        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
-        "    displayAlign: 'center'," +
-        "    displayIndent: '0em'," +
-        "    showMathMenu: true," +
-        "    tex2jax: { " +
-        "        inlineMath: [ ['$','$'] ], " +
-        "        displayMath: [ ['$$','$$'] ]," +
-        "        processEscapes: true," +
-        "        preview: 'TeX'," +
-        "    }, " +
-        "    'HTML-CSS': { " +
-        " linebreaks: { automatic: true, width: '95% container' }, " +
-        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'black ! important'} }" +
-        "    } " +
-        "}); ";
-    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
-}
-&lt;/script&gt;
-</content><category term="python firsts"></category></entry><entry><title>Cancer Diagnosis-II</title><link href="https://nathdip.github.io/cancer%20diagnosis%20II.html" rel="alternate"></link><published>2017-12-12T15:34:00+01:00</published><updated>2017-12-12T15:34:00+01:00</updated><author><name>Dipankar</name></author><id>tag:nathdip.github.io,2017-12-12:/cancer diagnosis II.html</id><summary type="html">
-&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
-&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
-&lt;h1 id="Diagnosis-of-cancer"&gt;Diagnosis of cancer&lt;a class="anchor-link" href="#Diagnosis-of-cancer"&gt;¶&lt;/a&gt;&lt;/h1&gt;&lt;p&gt;In this post I will describe how to build a deep neural network that can predict whether a tumor is malignant or benign. In the earlier &lt;a href="https://nathdip.github.io/cancer%20diagnosis%20I.html"&gt;post&lt;/a&gt;, we have looked into how we can use a linear classifier and just two features to classify the different tumors. However with the large number of features at our disposal a logical way to get the best classification is to train a neural network.&lt;/p&gt;</summary><content type="html">&lt;style type="text/css"&gt;/*!
-*
-* IPython notebook
-*
-*/
-/* CSS font colors for translated ANSI colors. */
-.ansibold {
-  font-weight: bold;
-}
-/* use dark versions for foreground, to improve visibility */
-.ansiblack {
-  color: black;
-}
-.ansired {
-  color: darkred;
-}
-.ansigreen {
-  color: darkgreen;
-}
-.ansiyellow {
-  color: #c4a000;
-}
-.ansiblue {
-  color: darkblue;
-}
-.ansipurple {
-  color: darkviolet;
-}
-.ansicyan {
-  color: steelblue;
-}
-.ansigray {
-  color: gray;
-}
-/* and light for background, for the same reason */
-.ansibgblack {
-  background-color: black;
-}
-.ansibgred {
-  background-color: red;
-}
-.ansibggreen {
-  background-color: green;
-}
-.ansibgyellow {
-  background-color: yellow;
-}
-.ansibgblue {
-  background-color: blue;
-}
-.ansibgpurple {
-  background-color: magenta;
-}
-.ansibgcyan {
-  background-color: cyan;
-}
-.ansibggray {
-  background-color: gray;
-}
-div.cell {
-  /* Old browsers */
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-box-align: stretch;
-  display: -moz-box;
-  -moz-box-orient: vertical;
-  -moz-box-align: stretch;
-  display: box;
-  box-orient: vertical;
-  box-align: stretch;
-  /* Modern browsers */
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  border-radius: 2px;
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  border-width: 1px;
-  border-style: solid;
-  border-color: transparent;
-  width: 100%;
-  padding: 5px;
-  /* This acts as a spacer between cells, that is outside the border */
-  margin: 0px;
-  outline: none;
-  border-left-width: 1px;
-  padding-left: 5px;
-  background: linear-gradient(to right, transparent -40px, transparent 1px, transparent 1px, transparent 100%);
-}
-div.cell.jupyter-soft-selected {
-  border-left-color: #90CAF9;
-  border-left-color: #E3F2FD;
-  border-left-width: 1px;
-  padding-left: 5px;
-  border-right-color: #E3F2FD;
-  border-right-width: 1px;
-  background: #E3F2FD;
-}
-@media print {
-  div.cell.jupyter-soft-selected {
-    border-color: transparent;
-  }
-}
-div.cell.selected {
-  border-color: #ababab;
-  border-left-width: 0px;
-  padding-left: 6px;
-  background: linear-gradient(to right, #42A5F5 -40px, #42A5F5 5px, transparent 5px, transparent 100%);
-}
-@media print {
-  div.cell.selected {
-    border-color: transparent;
-  }
-}
-div.cell.selected.jupyter-soft-selected {
-  border-left-width: 0;
-  padding-left: 6px;
-  background: linear-gradient(to right, #42A5F5 -40px, #42A5F5 7px, #E3F2FD 7px, #E3F2FD 100%);
-}
-.edit_mode div.cell.selected {
-  border-color: #66BB6A;
-  border-left-width: 0px;
-  padding-left: 6px;
-  background: linear-gradient(to right, #66BB6A -40px, #66BB6A 5px, transparent 5px, transparent 100%);
-}
-@media print {
-  .edit_mode div.cell.selected {
-    border-color: transparent;
-  }
-}
-.prompt {
-  /* This needs to be wide enough for 3 digit prompt numbers: In[100]: */
-  min-width: 14ex;
-  /* This padding is tuned to match the padding on the CodeMirror editor. */
-  padding: 0.4em;
-  margin: 0px;
-  font-family: monospace;
-  text-align: right;
-  /* This has to match that of the the CodeMirror class line-height below */
-  line-height: 1.21429em;
-  /* Don't highlight prompt number selection */
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  /* Use default cursor */
-  cursor: default;
-}
-@media (max-width: 540px) {
-  .prompt {
-    text-align: left;
-  }
-}
-div.inner_cell {
-  min-width: 0;
-  /* Old browsers */
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-box-align: stretch;
-  display: -moz-box;
-  -moz-box-orient: vertical;
-  -moz-box-align: stretch;
-  display: box;
-  box-orient: vertical;
-  box-align: stretch;
-  /* Modern browsers */
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  /* Old browsers */
-  -webkit-box-flex: 1;
-  -moz-box-flex: 1;
-  box-flex: 1;
-  /* Modern browsers */
-  flex: 1;
-}
-/* input_area and input_prompt must match in top border and margin for alignment */
-div.input_area {
-  border: 1px solid #cfcfcf;
-  border-radius: 2px;
-  background: #f7f7f7;
-  line-height: 1.21429em;
-}
-/* This is needed so that empty prompt areas can collapse to zero height when there
-   is no content in the output_subarea and the prompt. The main purpose of this is
-   to make sure that empty JavaScript output_subareas have no height. */
-div.prompt:empty {
-  padding-top: 0;
-  padding-bottom: 0;
-}
-div.unrecognized_cell {
-  padding: 5px 5px 5px 0px;
-  /* Old browsers */
-  display: -webkit-box;
-  -webkit-box-orient: horizontal;
-  -webkit-box-align: stretch;
-  display: -moz-box;
-  -moz-box-orient: horizontal;
-  -moz-box-align: stretch;
-  display: box;
-  box-orient: horizontal;
-  box-align: stretch;
-  /* Modern browsers */
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-}
-div.unrecognized_cell .inner_cell {
-  border-radius: 2px;
-  padding: 5px;
-  font-weight: bold;
-  color: red;
-  border: 1px solid #cfcfcf;
-  background: #eaeaea;
-}
-div.unrecognized_cell .inner_cell a {
-  color: inherit;
-  text-decoration: none;
-}
-div.unrecognized_cell .inner_cell a:hover {
-  color: inherit;
-  text-decoration: none;
-}
-@media (max-width: 540px) {
-  div.unrecognized_cell &gt; div.prompt {
-    display: none;
-  }
-}
-div.code_cell {
-  /* avoid page breaking on code cells when printing */
-}
-@media print {
-  div.code_cell {
-    page-break-inside: avoid;
-  }
-}
-/* any special styling for code cells that are currently running goes here */
-div.input {
-  page-break-inside: avoid;
-  /* Old browsers */
-  display: -webkit-box;
-  -webkit-box-orient: horizontal;
-  -webkit-box-align: stretch;
-  display: -moz-box;
-  -moz-box-orient: horizontal;
-  -moz-box-align: stretch;
-  display: box;
-  box-orient: horizontal;
-  box-align: stretch;
-  /* Modern browsers */
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-}
-@media (max-width: 540px) {
-  div.input {
-    /* Old browsers */
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-box-align: stretch;
-    display: -moz-box;
-    -moz-box-orient: vertical;
-    -moz-box-align: stretch;
-    display: box;
-    box-orient: vertical;
-    box-align: stretch;
-    /* Modern browsers */
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-  }
-}
-/* input_area and input_prompt must match in top border and margin for alignment */
-div.input_prompt {
-  color: #303F9F;
-  border-top: 1px solid transparent;
-}
-div.input_area &gt; div.highlight {
-  margin: 0.4em;
-  border: none;
-  padding: 0px;
-  background-color: transparent;
-}
-div.input_area &gt; div.highlight &gt; pre {
-  margin: 0px;
-  border: none;
-  padding: 0px;
-  background-color: transparent;
-}
-/* The following gets added to the &lt;head&gt; if it is detected that the user has a
- * monospace font with inconsistent normal/bold/italic height.  See
- * notebookmain.js.  Such fonts will have keywords vertically offset with
- * respect to the rest of the text.  The user should select a better font.
- * See: https://github.com/ipython/ipython/issues/1503
- *
- * .CodeMirror span {
- *      vertical-align: bottom;
- * }
- */
-.CodeMirror {
-  line-height: 1.21429em;
-  /* Changed from 1em to our global default */
-  font-size: 14px;
-  height: auto;
-  /* Changed to auto to autogrow */
-  background: none;
-  /* Changed from white to allow our bg to show through */
-}
-.CodeMirror-scroll {
-  /*  The CodeMirror docs are a bit fuzzy on if overflow-y should be hidden or visible.*/
-  /*  We have found that if it is visible, vertical scrollbars appear with font size changes.*/
-  overflow-y: hidden;
-  overflow-x: auto;
-}
-.CodeMirror-lines {
-  /* In CM2, this used to be 0.4em, but in CM3 it went to 4px. We need the em value because */
-  /* we have set a different line-height and want this to scale with that. */
-  padding: 0.4em;
-}
-.CodeMirror-linenumber {
-  padding: 0 8px 0 4px;
-}
-.CodeMirror-gutters {
-  border-bottom-left-radius: 2px;
-  border-top-left-radius: 2px;
-}
-.CodeMirror pre {
-  /* In CM3 this went to 4px from 0 in CM2. We need the 0 value because of how we size */
-  /* .CodeMirror-lines */
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-}
-/*
-
-Original style from softwaremaniacs.org (c) Ivan Sagalaev &lt;Maniac@SoftwareManiacs.Org&gt;
-Adapted from GitHub theme
-
-*/
-.highlight-base {
-  color: #000;
-}
-.highlight-variable {
-  color: #000;
-}
-.highlight-variable-2 {
-  color: #1a1a1a;
-}
-.highlight-variable-3 {
-  color: #333333;
-}
-.highlight-string {
-  color: #BA2121;
-}
-.highlight-comment {
-  color: #408080;
-  font-style: italic;
-}
-.highlight-number {
-  color: #080;
-}
-.highlight-atom {
-  color: #88F;
-}
-.highlight-keyword {
-  color: #008000;
-  font-weight: bold;
-}
-.highlight-builtin {
-  color: #008000;
-}
-.highlight-error {
-  color: #f00;
-}
-.highlight-operator {
-  color: #AA22FF;
-  font-weight: bold;
-}
-.highlight-meta {
-  color: #AA22FF;
-}
-/* previously not defined, copying from default codemirror */
-.highlight-def {
-  color: #00f;
-}
-.highlight-string-2 {
-  color: #f50;
-}
-.highlight-qualifier {
-  color: #555;
-}
-.highlight-bracket {
-  color: #997;
-}
-.highlight-tag {
-  color: #170;
-}
-.highlight-attribute {
-  color: #00c;
-}
-.highlight-header {
-  color: blue;
-}
-.highlight-quote {
-  color: #090;
-}
-.highlight-link {
-  color: #00c;
-}
-/* apply the same style to codemirror */
-.cm-s-ipython span.cm-keyword {
-  color: #008000;
-  font-weight: bold;
-}
-.cm-s-ipython span.cm-atom {
-  color: #88F;
-}
-.cm-s-ipython span.cm-number {
-  color: #080;
-}
-.cm-s-ipython span.cm-def {
-  color: #00f;
-}
-.cm-s-ipython span.cm-variable {
-  color: #000;
-}
-.cm-s-ipython span.cm-operator {
-  color: #AA22FF;
-  font-weight: bold;
-}
-.cm-s-ipython span.cm-variable-2 {
-  color: #1a1a1a;
-}
-.cm-s-ipython span.cm-variable-3 {
-  color: #333333;
-}
-.cm-s-ipython span.cm-comment {
-  color: #408080;
-  font-style: italic;
-}
-.cm-s-ipython span.cm-string {
-  color: #BA2121;
-}
-.cm-s-ipython span.cm-string-2 {
-  color: #f50;
-}
-.cm-s-ipython span.cm-meta {
-  color: #AA22FF;
-}
-.cm-s-ipython span.cm-qualifier {
-  color: #555;
-}
-.cm-s-ipython span.cm-builtin {
-  color: #008000;
-}
-.cm-s-ipython span.cm-bracket {
-  color: #997;
-}
-.cm-s-ipython span.cm-tag {
-  color: #170;
-}
-.cm-s-ipython span.cm-attribute {
-  color: #00c;
-}
-.cm-s-ipython span.cm-header {
-  color: blue;
-}
-.cm-s-ipython span.cm-quote {
-  color: #090;
-}
-.cm-s-ipython span.cm-link {
-  color: #00c;
-}
-.cm-s-ipython span.cm-error {
-  color: #f00;
-}
-.cm-s-ipython span.cm-tab {
-  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAMCAYAAAAkuj5RAAAAAXNSR0IArs4c6QAAAGFJREFUSMft1LsRQFAQheHPowAKoACx3IgEKtaEHujDjORSgWTH/ZOdnZOcM/sgk/kFFWY0qV8foQwS4MKBCS3qR6ixBJvElOobYAtivseIE120FaowJPN75GMu8j/LfMwNjh4HUpwg4LUAAAAASUVORK5CYII=);
-  background-position: right;
-  background-repeat: no-repeat;
-}
-div.output_wrapper {
-  /* this position must be relative to enable descendents to be absolute within it */
-  position: relative;
-  /* Old browsers */
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-box-align: stretch;
-  display: -moz-box;
-  -moz-box-orient: vertical;
-  -moz-box-align: stretch;
-  display: box;
-  box-orient: vertical;
-  box-align: stretch;
-  /* Modern browsers */
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  z-index: 1;
-}
-/* class for the output area when it should be height-limited */
-div.output_scroll {
-  /* ideally, this would be max-height, but FF barfs all over that */
-  height: 24em;
-  /* FF needs this *and the wrapper* to specify full width, or it will shrinkwrap */
-  width: 100%;
-  overflow: auto;
-  border-radius: 2px;
-  -webkit-box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
-  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
-  display: block;
-}
-/* output div while it is collapsed */
-div.output_collapsed {
-  margin: 0px;
-  padding: 0px;
-  /* Old browsers */
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-box-align: stretch;
-  display: -moz-box;
-  -moz-box-orient: vertical;
-  -moz-box-align: stretch;
-  display: box;
-  box-orient: vertical;
-  box-align: stretch;
-  /* Modern browsers */
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-}
-div.out_prompt_overlay {
-  height: 100%;
-  padding: 0px 0.4em;
-  position: absolute;
-  border-radius: 2px;
-}
-div.out_prompt_overlay:hover {
-  /* use inner shadow to get border that is computed the same on WebKit/FF */
-  -webkit-box-shadow: inset 0 0 1px #000;
-  box-shadow: inset 0 0 1px #000;
-  background: rgba(240, 240, 240, 0.5);
-}
-div.output_prompt {
-  color: #D84315;
-}
-/* This class is the outer container of all output sections. */
-div.output_area {
-  padding: 0px;
-  page-break-inside: avoid;
-  /* Old browsers */
-  display: -webkit-box;
-  -webkit-box-orient: horizontal;
-  -webkit-box-align: stretch;
-  display: -moz-box;
-  -moz-box-orient: horizontal;
-  -moz-box-align: stretch;
-  display: box;
-  box-orient: horizontal;
-  box-align: stretch;
-  /* Modern browsers */
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-}
-div.output_area .MathJax_Display {
-  text-align: left !important;
-}
-div.output_area 
-div.output_area 
-div.output_area img,
-div.output_area svg {
-  max-width: 100%;
-  height: auto;
-}
-div.output_area img.unconfined,
-div.output_area svg.unconfined {
-  max-width: none;
-}
-/* This is needed to protect the pre formating from global settings such
-   as that of bootstrap */
-.output {
-  /* Old browsers */
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-box-align: stretch;
-  display: -moz-box;
-  -moz-box-orient: vertical;
-  -moz-box-align: stretch;
-  display: box;
-  box-orient: vertical;
-  box-align: stretch;
-  /* Modern browsers */
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-}
-@media (max-width: 540px) {
-  div.output_area {
-    /* Old browsers */
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-box-align: stretch;
-    display: -moz-box;
-    -moz-box-orient: vertical;
-    -moz-box-align: stretch;
-    display: box;
-    box-orient: vertical;
-    box-align: stretch;
-    /* Modern browsers */
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-  }
-}
-div.output_area pre {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  vertical-align: baseline;
-  color: black;
-  background-color: transparent;
-  border-radius: 0;
-}
-/* This class is for the output subarea inside the output_area and after
-   the prompt div. */
-div.output_subarea {
-  overflow-x: auto;
-  padding: 0.4em;
-  /* Old browsers */
-  -webkit-box-flex: 1;
-  -moz-box-flex: 1;
-  box-flex: 1;
-  /* Modern browsers */
-  flex: 1;
-  max-width: calc(100% - 14ex);
-}
-div.output_scroll div.output_subarea {
-  overflow-x: visible;
-}
-/* The rest of the output_* classes are for special styling of the different
-   output types */
-/* all text output has this class: */
-div.output_text {
-  text-align: left;
-  color: #000;
-  /* This has to match that of the the CodeMirror class line-height below */
-  line-height: 1.21429em;
-}
-/* stdout/stderr are 'text' as well as 'stream', but execute_result/error are *not* streams */
-div.output_stderr {
-  background: #fdd;
-  /* very light red background for stderr */
-}
-div.output_latex {
-  text-align: left;
-}
-/* Empty output_javascript divs should have no height */
-div.output_javascript:empty {
-  padding: 0;
-}
-.js-error {
-  color: darkred;
-}
-/* raw_input styles */
-div.raw_input_container {
-  line-height: 1.21429em;
-  padding-top: 5px;
-}
-pre.raw_input_prompt {
-  /* nothing needed here. */
-}
-input.raw_input {
-  font-family: monospace;
-  font-size: inherit;
-  color: inherit;
-  width: auto;
-  /* make sure input baseline aligns with prompt */
-  vertical-align: baseline;
-  /* padding + margin = 0.5em between prompt and cursor */
-  padding: 0em 0.25em;
-  margin: 0em 0.25em;
-}
-input.raw_input:focus {
-  box-shadow: none;
-}
-p.p-space {
-  margin-bottom: 10px;
-}
-div.output_unrecognized {
-  padding: 5px;
-  font-weight: bold;
-  color: red;
-}
-div.output_unrecognized a {
-  color: inherit;
-  text-decoration: none;
-}
-div.output_unrecognized a:hover {
-  color: inherit;
-  text-decoration: none;
-}
-.rendered_html {
-  color: #000;
-  /* any extras will just be numbers: */
-}
-
-
-
-.rendered_html :link {
-  text-decoration: underline;
-}
-.rendered_html :visited {
-  text-decoration: underline;
-}
-
-
-
-
-
-
-.rendered_html h1:first-child {
-  margin-top: 0.538em;
-}
-.rendered_html h2:first-child {
-  margin-top: 0.636em;
-}
-.rendered_html h3:first-child {
-  margin-top: 0.777em;
-}
-.rendered_html h4:first-child {
-  margin-top: 1em;
-}
-.rendered_html h5:first-child {
-  margin-top: 1em;
-}
-.rendered_html h6:first-child {
-  margin-top: 1em;
-}
-
-
-
-
-
-
-
-
-.rendered_html * + ul {
-  margin-top: 1em;
-}
-.rendered_html * + ol {
-  margin-top: 1em;
-}
-
-
-.rendered_html pre,
-
-
-
-.rendered_html tr,
-.rendered_html th,
-
-.rendered_html td,
-
-
-.rendered_html * + table {
-  margin-top: 1em;
-}
-
-.rendered_html * + p {
-  margin-top: 1em;
-}
-
-.rendered_html * + img {
-  margin-top: 1em;
-}
-.rendered_html img,
-
-.rendered_html img.unconfined,
-
-div.text_cell {
-  /* Old browsers */
-  display: -webkit-box;
-  -webkit-box-orient: horizontal;
-  -webkit-box-align: stretch;
-  display: -moz-box;
-  -moz-box-orient: horizontal;
-  -moz-box-align: stretch;
-  display: box;
-  box-orient: horizontal;
-  box-align: stretch;
-  /* Modern browsers */
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-}
-@media (max-width: 540px) {
-  div.text_cell &gt; div.prompt {
-    display: none;
-  }
-}
-div.text_cell_render {
-  /*font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;*/
-  outline: none;
-  resize: none;
-  width: inherit;
-  border-style: none;
-  padding: 0.5em 0.5em 0.5em 0.4em;
-  color: #000;
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-}
-a.anchor-link:link {
-  text-decoration: none;
-  padding: 0px 20px;
-  visibility: hidden;
-}
-h1:hover .anchor-link,
-h2:hover .anchor-link,
-h3:hover .anchor-link,
-h4:hover .anchor-link,
-h5:hover .anchor-link,
-h6:hover .anchor-link {
-  visibility: visible;
-}
-.text_cell.rendered .input_area {
-  display: none;
-}
-.text_cell.rendered 
-.text_cell.unrendered .text_cell_render {
-  display: none;
-}
-.cm-header-1,
-.cm-header-2,
-.cm-header-3,
-.cm-header-4,
-.cm-header-5,
-.cm-header-6 {
-  font-weight: bold;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-.cm-header-1 {
-  font-size: 185.7%;
-}
-.cm-header-2 {
-  font-size: 157.1%;
-}
-.cm-header-3 {
-  font-size: 128.6%;
-}
-.cm-header-4 {
-  font-size: 110%;
-}
-.cm-header-5 {
-  font-size: 100%;
-  font-style: italic;
-}
-.cm-header-6 {
-  font-size: 100%;
-  font-style: italic;
-}
-&lt;/style&gt;
-&lt;style type="text/css"&gt;.highlight .hll { background-color: #ffffcc }
-.highlight  { background: #f8f8f8; }
-.highlight .c { color: #408080; font-style: italic } /* Comment */
-.highlight .err { border: 1px solid #FF0000 } /* Error */
-.highlight .k { color: #008000; font-weight: bold } /* Keyword */
-.highlight .o { color: #666666 } /* Operator */
-.highlight .ch { color: #408080; font-style: italic } /* Comment.Hashbang */
-.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
-.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
-.highlight .cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
-.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
-.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
-.highlight .gd { color: #A00000 } /* Generic.Deleted */
-.highlight .ge { font-style: italic } /* Generic.Emph */
-.highlight .gr { color: #FF0000 } /* Generic.Error */
-.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
-.highlight .gi { color: #00A000 } /* Generic.Inserted */
-.highlight .go { color: #888888 } /* Generic.Output */
-.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
-.highlight .gs { font-weight: bold } /* Generic.Strong */
-.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
-.highlight .gt { color: #0044DD } /* Generic.Traceback */
-.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
-.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
-.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
-.highlight .kp { color: #008000 } /* Keyword.Pseudo */
-.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
-.highlight .kt { color: #B00040 } /* Keyword.Type */
-.highlight .m { color: #666666 } /* Literal.Number */
-.highlight .s { color: #BA2121 } /* Literal.String */
-.highlight .na { color: #7D9029 } /* Name.Attribute */
-.highlight .nb { color: #008000 } /* Name.Builtin */
-.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
-.highlight .no { color: #880000 } /* Name.Constant */
-.highlight .nd { color: #AA22FF } /* Name.Decorator */
-.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
-.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
-.highlight .nf { color: #0000FF } /* Name.Function */
-.highlight .nl { color: #A0A000 } /* Name.Label */
-.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
-.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
-.highlight .nv { color: #19177C } /* Name.Variable */
-.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
-.highlight .w { color: #bbbbbb } /* Text.Whitespace */
-.highlight .mb { color: #666666 } /* Literal.Number.Bin */
-.highlight .mf { color: #666666 } /* Literal.Number.Float */
-.highlight .mh { color: #666666 } /* Literal.Number.Hex */
-.highlight .mi { color: #666666 } /* Literal.Number.Integer */
-.highlight .mo { color: #666666 } /* Literal.Number.Oct */
-.highlight .sa { color: #BA2121 } /* Literal.String.Affix */
-.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
-.highlight .sc { color: #BA2121 } /* Literal.String.Char */
-.highlight .dl { color: #BA2121 } /* Literal.String.Delimiter */
-.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
-.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
-.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
-.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
-.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
-.highlight .sx { color: #008000 } /* Literal.String.Other */
-.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
-.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
-.highlight .ss { color: #19177C } /* Literal.String.Symbol */
-.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
-.highlight .fm { color: #0000FF } /* Name.Function.Magic */
-.highlight .vc { color: #19177C } /* Name.Variable.Class */
-.highlight .vg { color: #19177C } /* Name.Variable.Global */
-.highlight .vi { color: #19177C } /* Name.Variable.Instance */
-.highlight .vm { color: #19177C } /* Name.Variable.Magic */
-.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */&lt;/style&gt;
-&lt;style type="text/css"&gt;
-/* Temporary definitions which will become obsolete with Notebook release 5.0 */
-.ansi-black-fg { color: #3E424D; }
-.ansi-black-bg { background-color: #3E424D; }
-.ansi-black-intense-fg { color: #282C36; }
-.ansi-black-intense-bg { background-color: #282C36; }
-.ansi-red-fg { color: #E75C58; }
-.ansi-red-bg { background-color: #E75C58; }
-.ansi-red-intense-fg { color: #B22B31; }
-.ansi-red-intense-bg { background-color: #B22B31; }
-.ansi-green-fg { color: #00A250; }
-.ansi-green-bg { background-color: #00A250; }
-.ansi-green-intense-fg { color: #007427; }
-.ansi-green-intense-bg { background-color: #007427; }
-.ansi-yellow-fg { color: #DDB62B; }
-.ansi-yellow-bg { background-color: #DDB62B; }
-.ansi-yellow-intense-fg { color: #B27D12; }
-.ansi-yellow-intense-bg { background-color: #B27D12; }
-.ansi-blue-fg { color: #208FFB; }
-.ansi-blue-bg { background-color: #208FFB; }
-.ansi-blue-intense-fg { color: #0065CA; }
-.ansi-blue-intense-bg { background-color: #0065CA; }
-.ansi-magenta-fg { color: #D160C4; }
-.ansi-magenta-bg { background-color: #D160C4; }
-.ansi-magenta-intense-fg { color: #A03196; }
-.ansi-magenta-intense-bg { background-color: #A03196; }
-.ansi-cyan-fg { color: #60C6C8; }
-.ansi-cyan-bg { background-color: #60C6C8; }
-.ansi-cyan-intense-fg { color: #258F8F; }
-.ansi-cyan-intense-bg { background-color: #258F8F; }
-.ansi-white-fg { color: #C5C1B4; }
-.ansi-white-bg { background-color: #C5C1B4; }
-.ansi-white-intense-fg { color: #A1A6B2; }
-.ansi-white-intense-bg { background-color: #A1A6B2; }
-
-.ansi-bold { font-weight: bold; }
-&lt;/style&gt;
-&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
-&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
-&lt;h1 id="Diagnosis-of-cancer"&gt;Diagnosis of cancer&lt;a class="anchor-link" href="#Diagnosis-of-cancer"&gt;¶&lt;/a&gt;&lt;/h1&gt;&lt;p&gt;In this post I will describe how to build a deep neural network that can predict whether a tumor is malignant or benign. In the earlier &lt;a href="https://nathdip.github.io/cancer%20diagnosis%20I.html"&gt;post&lt;/a&gt;, we have looked into how we can use a linear classifier and just two features to classify the different tumors. However with the large number of features at our disposal a logical way to get the best classification is to train a neural network.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
-&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
-&lt;h2 id="Designing-a-deep-neural-network."&gt;Designing a deep neural network.&lt;a class="anchor-link" href="#Designing-a-deep-neural-network."&gt;¶&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Neural networks consists of network of interconnected nodes or neurons as it is inspired by connection among neurons in the brain. The various features form the input layer of neuron. There is also another set of neuron(s) which form the output layer. Connecting the input layer and the output layer are the hidden layer. Depending upon the application we might have several such hidden layers. Deep neural networks consists of several such hidden layers.&lt;/p&gt;
-&lt;p&gt;In this particular case we will have a neural network which has an input layer of size number of features. Let us have a look at our data again.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="cell border-box-sizing code_cell rendered"&gt;
-&lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [1]:&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-&lt;div class="input_area"&gt;
-&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;numpy&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;np&lt;/span&gt;
-&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pandas&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;pd&lt;/span&gt;
-&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;matplotlib.pyplot&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;plt&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="cell border-box-sizing code_cell rendered"&gt;
-&lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [3]:&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-&lt;div class="input_area"&gt;
-&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;dataset&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pd&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read_csv&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'data.csv'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;dataset&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;head&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="output_wrapper"&gt;
-&lt;div class="output"&gt;
-&lt;div class="output_area"&gt;
-&lt;div class="prompt output_prompt"&gt;Out[3]:&lt;/div&gt;
-&lt;div class="output_html rendered_html output_subarea output_execute_result"&gt;
-&lt;div&gt;
-&lt;style scoped=""&gt;
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-&lt;/style&gt;
-&lt;table border="1" class="dataframe"&gt;
-&lt;thead&gt;
-&lt;tr style="text-align: right;"&gt;
-&lt;th&gt;&lt;/th&gt;
-&lt;th&gt;id&lt;/th&gt;
-&lt;th&gt;diagnosis&lt;/th&gt;
-&lt;th&gt;radius_mean&lt;/th&gt;
-&lt;th&gt;texture_mean&lt;/th&gt;
-&lt;th&gt;perimeter_mean&lt;/th&gt;
-&lt;th&gt;area_mean&lt;/th&gt;
-&lt;th&gt;smoothness_mean&lt;/th&gt;
-&lt;th&gt;compactness_mean&lt;/th&gt;
-&lt;th&gt;concavity_mean&lt;/th&gt;
-&lt;th&gt;concave points_mean&lt;/th&gt;
-&lt;th&gt;...&lt;/th&gt;
-&lt;th&gt;texture_worst&lt;/th&gt;
-&lt;th&gt;perimeter_worst&lt;/th&gt;
-&lt;th&gt;area_worst&lt;/th&gt;
-&lt;th&gt;smoothness_worst&lt;/th&gt;
-&lt;th&gt;compactness_worst&lt;/th&gt;
-&lt;th&gt;concavity_worst&lt;/th&gt;
-&lt;th&gt;concave points_worst&lt;/th&gt;
-&lt;th&gt;symmetry_worst&lt;/th&gt;
-&lt;th&gt;fractal_dimension_worst&lt;/th&gt;
-&lt;th&gt;Unnamed: 32&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;th&gt;0&lt;/th&gt;
-&lt;td&gt;842302&lt;/td&gt;
-&lt;td&gt;M&lt;/td&gt;
-&lt;td&gt;17.99&lt;/td&gt;
-&lt;td&gt;10.38&lt;/td&gt;
-&lt;td&gt;122.80&lt;/td&gt;
-&lt;td&gt;1001.0&lt;/td&gt;
-&lt;td&gt;0.11840&lt;/td&gt;
-&lt;td&gt;0.27760&lt;/td&gt;
-&lt;td&gt;0.30010&lt;/td&gt;
-&lt;td&gt;0.14710&lt;/td&gt;
-&lt;td&gt;...&lt;/td&gt;
-&lt;td&gt;17.33&lt;/td&gt;
-&lt;td&gt;184.60&lt;/td&gt;
-&lt;td&gt;2019.0&lt;/td&gt;
-&lt;td&gt;0.1622&lt;/td&gt;
-&lt;td&gt;0.6656&lt;/td&gt;
-&lt;td&gt;0.7119&lt;/td&gt;
-&lt;td&gt;0.2654&lt;/td&gt;
-&lt;td&gt;0.4601&lt;/td&gt;
-&lt;td&gt;0.11890&lt;/td&gt;
-&lt;td&gt;NaN&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;th&gt;1&lt;/th&gt;
-&lt;td&gt;842517&lt;/td&gt;
-&lt;td&gt;M&lt;/td&gt;
-&lt;td&gt;20.57&lt;/td&gt;
-&lt;td&gt;17.77&lt;/td&gt;
-&lt;td&gt;132.90&lt;/td&gt;
-&lt;td&gt;1326.0&lt;/td&gt;
-&lt;td&gt;0.08474&lt;/td&gt;
-&lt;td&gt;0.07864&lt;/td&gt;
-&lt;td&gt;0.08690&lt;/td&gt;
-&lt;td&gt;0.07017&lt;/td&gt;
-&lt;td&gt;...&lt;/td&gt;
-&lt;td&gt;23.41&lt;/td&gt;
-&lt;td&gt;158.80&lt;/td&gt;
-&lt;td&gt;1956.0&lt;/td&gt;
-&lt;td&gt;0.1238&lt;/td&gt;
-&lt;td&gt;0.1866&lt;/td&gt;
-&lt;td&gt;0.2416&lt;/td&gt;
-&lt;td&gt;0.1860&lt;/td&gt;
-&lt;td&gt;0.2750&lt;/td&gt;
-&lt;td&gt;0.08902&lt;/td&gt;
-&lt;td&gt;NaN&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;th&gt;2&lt;/th&gt;
-&lt;td&gt;84300903&lt;/td&gt;
-&lt;td&gt;M&lt;/td&gt;
-&lt;td&gt;19.69&lt;/td&gt;
-&lt;td&gt;21.25&lt;/td&gt;
-&lt;td&gt;130.00&lt;/td&gt;
-&lt;td&gt;1203.0&lt;/td&gt;
-&lt;td&gt;0.10960&lt;/td&gt;
-&lt;td&gt;0.15990&lt;/td&gt;
-&lt;td&gt;0.19740&lt;/td&gt;
-&lt;td&gt;0.12790&lt;/td&gt;
-&lt;td&gt;...&lt;/td&gt;
-&lt;td&gt;25.53&lt;/td&gt;
-&lt;td&gt;152.50&lt;/td&gt;
-&lt;td&gt;1709.0&lt;/td&gt;
-&lt;td&gt;0.1444&lt;/td&gt;
-&lt;td&gt;0.4245&lt;/td&gt;
-&lt;td&gt;0.4504&lt;/td&gt;
-&lt;td&gt;0.2430&lt;/td&gt;
-&lt;td&gt;0.3613&lt;/td&gt;
-&lt;td&gt;0.08758&lt;/td&gt;
-&lt;td&gt;NaN&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;th&gt;3&lt;/th&gt;
-&lt;td&gt;84348301&lt;/td&gt;
-&lt;td&gt;M&lt;/td&gt;
-&lt;td&gt;11.42&lt;/td&gt;
-&lt;td&gt;20.38&lt;/td&gt;
-&lt;td&gt;77.58&lt;/td&gt;
-&lt;td&gt;386.1&lt;/td&gt;
-&lt;td&gt;0.14250&lt;/td&gt;
-&lt;td&gt;0.28390&lt;/td&gt;
-&lt;td&gt;0.24140&lt;/td&gt;
-&lt;td&gt;0.10520&lt;/td&gt;
-&lt;td&gt;...&lt;/td&gt;
-&lt;td&gt;26.50&lt;/td&gt;
-&lt;td&gt;98.87&lt;/td&gt;
-&lt;td&gt;567.7&lt;/td&gt;
-&lt;td&gt;0.2098&lt;/td&gt;
-&lt;td&gt;0.8663&lt;/td&gt;
-&lt;td&gt;0.6869&lt;/td&gt;
-&lt;td&gt;0.2575&lt;/td&gt;
-&lt;td&gt;0.6638&lt;/td&gt;
-&lt;td&gt;0.17300&lt;/td&gt;
-&lt;td&gt;NaN&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;th&gt;4&lt;/th&gt;
-&lt;td&gt;84358402&lt;/td&gt;
-&lt;td&gt;M&lt;/td&gt;
-&lt;td&gt;20.29&lt;/td&gt;
-&lt;td&gt;14.34&lt;/td&gt;
-&lt;td&gt;135.10&lt;/td&gt;
-&lt;td&gt;1297.0&lt;/td&gt;
-&lt;td&gt;0.10030&lt;/td&gt;
-&lt;td&gt;0.13280&lt;/td&gt;
-&lt;td&gt;0.19800&lt;/td&gt;
-&lt;td&gt;0.10430&lt;/td&gt;
-&lt;td&gt;...&lt;/td&gt;
-&lt;td&gt;16.67&lt;/td&gt;
-&lt;td&gt;152.20&lt;/td&gt;
-&lt;td&gt;1575.0&lt;/td&gt;
-&lt;td&gt;0.1374&lt;/td&gt;
-&lt;td&gt;0.2050&lt;/td&gt;
-&lt;td&gt;0.4000&lt;/td&gt;
-&lt;td&gt;0.1625&lt;/td&gt;
-&lt;td&gt;0.2364&lt;/td&gt;
-&lt;td&gt;0.07678&lt;/td&gt;
-&lt;td&gt;NaN&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;th&gt;5&lt;/th&gt;
-&lt;td&gt;843786&lt;/td&gt;
-&lt;td&gt;M&lt;/td&gt;
-&lt;td&gt;12.45&lt;/td&gt;
-&lt;td&gt;15.70&lt;/td&gt;
-&lt;td&gt;82.57&lt;/td&gt;
-&lt;td&gt;477.1&lt;/td&gt;
-&lt;td&gt;0.12780&lt;/td&gt;
-&lt;td&gt;0.17000&lt;/td&gt;
-&lt;td&gt;0.15780&lt;/td&gt;
-&lt;td&gt;0.08089&lt;/td&gt;
-&lt;td&gt;...&lt;/td&gt;
-&lt;td&gt;23.75&lt;/td&gt;
-&lt;td&gt;103.40&lt;/td&gt;
-&lt;td&gt;741.6&lt;/td&gt;
-&lt;td&gt;0.1791&lt;/td&gt;
-&lt;td&gt;0.5249&lt;/td&gt;
-&lt;td&gt;0.5355&lt;/td&gt;
-&lt;td&gt;0.1741&lt;/td&gt;
-&lt;td&gt;0.3985&lt;/td&gt;
-&lt;td&gt;0.12440&lt;/td&gt;
-&lt;td&gt;NaN&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;th&gt;6&lt;/th&gt;
-&lt;td&gt;844359&lt;/td&gt;
-&lt;td&gt;M&lt;/td&gt;
-&lt;td&gt;18.25&lt;/td&gt;
-&lt;td&gt;19.98&lt;/td&gt;
-&lt;td&gt;119.60&lt;/td&gt;
-&lt;td&gt;1040.0&lt;/td&gt;
-&lt;td&gt;0.09463&lt;/td&gt;
-&lt;td&gt;0.10900&lt;/td&gt;
-&lt;td&gt;0.11270&lt;/td&gt;
-&lt;td&gt;0.07400&lt;/td&gt;
-&lt;td&gt;...&lt;/td&gt;
-&lt;td&gt;27.66&lt;/td&gt;
-&lt;td&gt;153.20&lt;/td&gt;
-&lt;td&gt;1606.0&lt;/td&gt;
-&lt;td&gt;0.1442&lt;/td&gt;
-&lt;td&gt;0.2576&lt;/td&gt;
-&lt;td&gt;0.3784&lt;/td&gt;
-&lt;td&gt;0.1932&lt;/td&gt;
-&lt;td&gt;0.3063&lt;/td&gt;
-&lt;td&gt;0.08368&lt;/td&gt;
-&lt;td&gt;NaN&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;th&gt;7&lt;/th&gt;
-&lt;td&gt;84458202&lt;/td&gt;
-&lt;td&gt;M&lt;/td&gt;
-&lt;td&gt;13.71&lt;/td&gt;
-&lt;td&gt;20.83&lt;/td&gt;
-&lt;td&gt;90.20&lt;/td&gt;
-&lt;td&gt;577.9&lt;/td&gt;
-&lt;td&gt;0.11890&lt;/td&gt;
-&lt;td&gt;0.16450&lt;/td&gt;
-&lt;td&gt;0.09366&lt;/td&gt;
-&lt;td&gt;0.05985&lt;/td&gt;
-&lt;td&gt;...&lt;/td&gt;
-&lt;td&gt;28.14&lt;/td&gt;
-&lt;td&gt;110.60&lt;/td&gt;
-&lt;td&gt;897.0&lt;/td&gt;
-&lt;td&gt;0.1654&lt;/td&gt;
-&lt;td&gt;0.3682&lt;/td&gt;
-&lt;td&gt;0.2678&lt;/td&gt;
-&lt;td&gt;0.1556&lt;/td&gt;
-&lt;td&gt;0.3196&lt;/td&gt;
-&lt;td&gt;0.11510&lt;/td&gt;
-&lt;td&gt;NaN&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;th&gt;8&lt;/th&gt;
-&lt;td&gt;844981&lt;/td&gt;
-&lt;td&gt;M&lt;/td&gt;
-&lt;td&gt;13.00&lt;/td&gt;
-&lt;td&gt;21.82&lt;/td&gt;
-&lt;td&gt;87.50&lt;/td&gt;
-&lt;td&gt;519.8&lt;/td&gt;
-&lt;td&gt;0.12730&lt;/td&gt;
-&lt;td&gt;0.19320&lt;/td&gt;
-&lt;td&gt;0.18590&lt;/td&gt;
-&lt;td&gt;0.09353&lt;/td&gt;
-&lt;td&gt;...&lt;/td&gt;
-&lt;td&gt;30.73&lt;/td&gt;
-&lt;td&gt;106.20&lt;/td&gt;
-&lt;td&gt;739.3&lt;/td&gt;
-&lt;td&gt;0.1703&lt;/td&gt;
-&lt;td&gt;0.5401&lt;/td&gt;
-&lt;td&gt;0.5390&lt;/td&gt;
-&lt;td&gt;0.2060&lt;/td&gt;
-&lt;td&gt;0.4378&lt;/td&gt;
-&lt;td&gt;0.10720&lt;/td&gt;
-&lt;td&gt;NaN&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;th&gt;9&lt;/th&gt;
-&lt;td&gt;84501001&lt;/td&gt;
-&lt;td&gt;M&lt;/td&gt;
-&lt;td&gt;12.46&lt;/td&gt;
-&lt;td&gt;24.04&lt;/td&gt;
-&lt;td&gt;83.97&lt;/td&gt;
-&lt;td&gt;475.9&lt;/td&gt;
-&lt;td&gt;0.11860&lt;/td&gt;
-&lt;td&gt;0.23960&lt;/td&gt;
-&lt;td&gt;0.22730&lt;/td&gt;
-&lt;td&gt;0.08543&lt;/td&gt;
-&lt;td&gt;...&lt;/td&gt;
-&lt;td&gt;40.68&lt;/td&gt;
-&lt;td&gt;97.65&lt;/td&gt;
-&lt;td&gt;711.4&lt;/td&gt;
-&lt;td&gt;0.1853&lt;/td&gt;
-&lt;td&gt;1.0580&lt;/td&gt;
-&lt;td&gt;1.1050&lt;/td&gt;
-&lt;td&gt;0.2210&lt;/td&gt;
-&lt;td&gt;0.4366&lt;/td&gt;
-&lt;td&gt;0.20750&lt;/td&gt;
-&lt;td&gt;NaN&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;10 rows × 33 columns&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
-&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
-&lt;p&gt;We need to drop the last column of the dataframe as it has only 'NaN' as entries&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="cell border-box-sizing code_cell rendered"&gt;
-&lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [4]:&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-&lt;div class="input_area"&gt;
-&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;dataset&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;dataset&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;drop&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;columns&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'Unnamed: 32'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;axis&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="cell border-box-sizing code_cell rendered"&gt;
-&lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [5]:&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-&lt;div class="input_area"&gt;
-&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;dataset&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;head&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="output_wrapper"&gt;
-&lt;div class="output"&gt;
-&lt;div class="output_area"&gt;
-&lt;div class="prompt output_prompt"&gt;Out[5]:&lt;/div&gt;
-&lt;div class="output_html rendered_html output_subarea output_execute_result"&gt;
-&lt;div&gt;
-&lt;style scoped=""&gt;
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-&lt;/style&gt;
-&lt;table border="1" class="dataframe"&gt;
-&lt;thead&gt;
-&lt;tr style="text-align: right;"&gt;
-&lt;th&gt;&lt;/th&gt;
-&lt;th&gt;id&lt;/th&gt;
-&lt;th&gt;diagnosis&lt;/th&gt;
-&lt;th&gt;radius_mean&lt;/th&gt;
-&lt;th&gt;texture_mean&lt;/th&gt;
-&lt;th&gt;perimeter_mean&lt;/th&gt;
-&lt;th&gt;area_mean&lt;/th&gt;
-&lt;th&gt;smoothness_mean&lt;/th&gt;
-&lt;th&gt;compactness_mean&lt;/th&gt;
-&lt;th&gt;concavity_mean&lt;/th&gt;
-&lt;th&gt;concave points_mean&lt;/th&gt;
-&lt;th&gt;...&lt;/th&gt;
-&lt;th&gt;radius_worst&lt;/th&gt;
-&lt;th&gt;texture_worst&lt;/th&gt;
-&lt;th&gt;perimeter_worst&lt;/th&gt;
-&lt;th&gt;area_worst&lt;/th&gt;
-&lt;th&gt;smoothness_worst&lt;/th&gt;
-&lt;th&gt;compactness_worst&lt;/th&gt;
-&lt;th&gt;concavity_worst&lt;/th&gt;
-&lt;th&gt;concave points_worst&lt;/th&gt;
-&lt;th&gt;symmetry_worst&lt;/th&gt;
-&lt;th&gt;fractal_dimension_worst&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;th&gt;0&lt;/th&gt;
-&lt;td&gt;842302&lt;/td&gt;
-&lt;td&gt;M&lt;/td&gt;
-&lt;td&gt;17.99&lt;/td&gt;
-&lt;td&gt;10.38&lt;/td&gt;
-&lt;td&gt;122.80&lt;/td&gt;
-&lt;td&gt;1001.0&lt;/td&gt;
-&lt;td&gt;0.11840&lt;/td&gt;
-&lt;td&gt;0.27760&lt;/td&gt;
-&lt;td&gt;0.3001&lt;/td&gt;
-&lt;td&gt;0.14710&lt;/td&gt;
-&lt;td&gt;...&lt;/td&gt;
-&lt;td&gt;25.38&lt;/td&gt;
-&lt;td&gt;17.33&lt;/td&gt;
-&lt;td&gt;184.60&lt;/td&gt;
-&lt;td&gt;2019.0&lt;/td&gt;
-&lt;td&gt;0.1622&lt;/td&gt;
-&lt;td&gt;0.6656&lt;/td&gt;
-&lt;td&gt;0.7119&lt;/td&gt;
-&lt;td&gt;0.2654&lt;/td&gt;
-&lt;td&gt;0.4601&lt;/td&gt;
-&lt;td&gt;0.11890&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;th&gt;1&lt;/th&gt;
-&lt;td&gt;842517&lt;/td&gt;
-&lt;td&gt;M&lt;/td&gt;
-&lt;td&gt;20.57&lt;/td&gt;
-&lt;td&gt;17.77&lt;/td&gt;
-&lt;td&gt;132.90&lt;/td&gt;
-&lt;td&gt;1326.0&lt;/td&gt;
-&lt;td&gt;0.08474&lt;/td&gt;
-&lt;td&gt;0.07864&lt;/td&gt;
-&lt;td&gt;0.0869&lt;/td&gt;
-&lt;td&gt;0.07017&lt;/td&gt;
-&lt;td&gt;...&lt;/td&gt;
-&lt;td&gt;24.99&lt;/td&gt;
-&lt;td&gt;23.41&lt;/td&gt;
-&lt;td&gt;158.80&lt;/td&gt;
-&lt;td&gt;1956.0&lt;/td&gt;
-&lt;td&gt;0.1238&lt;/td&gt;
-&lt;td&gt;0.1866&lt;/td&gt;
-&lt;td&gt;0.2416&lt;/td&gt;
-&lt;td&gt;0.1860&lt;/td&gt;
-&lt;td&gt;0.2750&lt;/td&gt;
-&lt;td&gt;0.08902&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;th&gt;2&lt;/th&gt;
-&lt;td&gt;84300903&lt;/td&gt;
-&lt;td&gt;M&lt;/td&gt;
-&lt;td&gt;19.69&lt;/td&gt;
-&lt;td&gt;21.25&lt;/td&gt;
-&lt;td&gt;130.00&lt;/td&gt;
-&lt;td&gt;1203.0&lt;/td&gt;
-&lt;td&gt;0.10960&lt;/td&gt;
-&lt;td&gt;0.15990&lt;/td&gt;
-&lt;td&gt;0.1974&lt;/td&gt;
-&lt;td&gt;0.12790&lt;/td&gt;
-&lt;td&gt;...&lt;/td&gt;
-&lt;td&gt;23.57&lt;/td&gt;
-&lt;td&gt;25.53&lt;/td&gt;
-&lt;td&gt;152.50&lt;/td&gt;
-&lt;td&gt;1709.0&lt;/td&gt;
-&lt;td&gt;0.1444&lt;/td&gt;
-&lt;td&gt;0.4245&lt;/td&gt;
-&lt;td&gt;0.4504&lt;/td&gt;
-&lt;td&gt;0.2430&lt;/td&gt;
-&lt;td&gt;0.3613&lt;/td&gt;
-&lt;td&gt;0.08758&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;th&gt;3&lt;/th&gt;
-&lt;td&gt;84348301&lt;/td&gt;
-&lt;td&gt;M&lt;/td&gt;
-&lt;td&gt;11.42&lt;/td&gt;
-&lt;td&gt;20.38&lt;/td&gt;
-&lt;td&gt;77.58&lt;/td&gt;
-&lt;td&gt;386.1&lt;/td&gt;
-&lt;td&gt;0.14250&lt;/td&gt;
-&lt;td&gt;0.28390&lt;/td&gt;
-&lt;td&gt;0.2414&lt;/td&gt;
-&lt;td&gt;0.10520&lt;/td&gt;
-&lt;td&gt;...&lt;/td&gt;
-&lt;td&gt;14.91&lt;/td&gt;
-&lt;td&gt;26.50&lt;/td&gt;
-&lt;td&gt;98.87&lt;/td&gt;
-&lt;td&gt;567.7&lt;/td&gt;
-&lt;td&gt;0.2098&lt;/td&gt;
-&lt;td&gt;0.8663&lt;/td&gt;
-&lt;td&gt;0.6869&lt;/td&gt;
-&lt;td&gt;0.2575&lt;/td&gt;
-&lt;td&gt;0.6638&lt;/td&gt;
-&lt;td&gt;0.17300&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;th&gt;4&lt;/th&gt;
-&lt;td&gt;84358402&lt;/td&gt;
-&lt;td&gt;M&lt;/td&gt;
-&lt;td&gt;20.29&lt;/td&gt;
-&lt;td&gt;14.34&lt;/td&gt;
-&lt;td&gt;135.10&lt;/td&gt;
-&lt;td&gt;1297.0&lt;/td&gt;
-&lt;td&gt;0.10030&lt;/td&gt;
-&lt;td&gt;0.13280&lt;/td&gt;
-&lt;td&gt;0.1980&lt;/td&gt;
-&lt;td&gt;0.10430&lt;/td&gt;
-&lt;td&gt;...&lt;/td&gt;
-&lt;td&gt;22.54&lt;/td&gt;
-&lt;td&gt;16.67&lt;/td&gt;
-&lt;td&gt;152.20&lt;/td&gt;
-&lt;td&gt;1575.0&lt;/td&gt;
-&lt;td&gt;0.1374&lt;/td&gt;
-&lt;td&gt;0.2050&lt;/td&gt;
-&lt;td&gt;0.4000&lt;/td&gt;
-&lt;td&gt;0.1625&lt;/td&gt;
-&lt;td&gt;0.2364&lt;/td&gt;
-&lt;td&gt;0.07678&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;5 rows × 32 columns&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
-&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
-&lt;p&gt;Now let us look at what will constitute as features which will be the input layer of our neural network. Clearly the id of the patient should play no role in the diagnosis and we can ignore it for the rest of the discussion. The column diagnosis corresponds to the output of the the neural network which we will use for the purpose of training our neural network. We can now split our data into input (X) and output (y) components.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="cell border-box-sizing code_cell rendered"&gt;
-&lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [17]:&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-&lt;div class="input_area"&gt;
-&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;features&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;list&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;dataset&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;features&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;delete&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;features&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
-&lt;span class="n"&gt;X&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;dataset&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;loc&lt;/span&gt;&lt;span class="p"&gt;[:,&lt;/span&gt; &lt;span class="n"&gt;features&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;values&lt;/span&gt;
-&lt;span class="n"&gt;y&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;dataset&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;loc&lt;/span&gt;&lt;span class="p"&gt;[:,&lt;/span&gt; &lt;span class="s1"&gt;'diagnosis'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;values&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
-&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
-&lt;p&gt;Now that we have the dataset a little preprocessing needs to be done in order to able to train the neural network. First we need to feature scale all the inputs. We will use a standard scaler in this case which basically converts all the inputs which has a zero mean and a unit standard deviation.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="cell border-box-sizing code_cell rendered"&gt;
-&lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [20]:&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-&lt;div class="input_area"&gt;
-&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.preprocessing&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;StandardScaler&lt;/span&gt;
-&lt;span class="n"&gt;sc&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt;  &lt;span class="n"&gt;StandardScaler&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-&lt;span class="n"&gt;X&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sc&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fit_transform&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;X&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
-&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
-&lt;p&gt;The output vector y which is the diagnosis has two classes 'M' for malignant and 'B' for benign. We need to encode it into a numeric values such that our classifier can understand&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="cell border-box-sizing code_cell rendered"&gt;
-&lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [22]:&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-&lt;div class="input_area"&gt;
-&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.preprocessing&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;LabelEncoder&lt;/span&gt;
-&lt;span class="n"&gt;labelencode&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;LabelEncoder&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-&lt;span class="n"&gt;y&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;labelencode&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fit_transform&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
-&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
-&lt;p&gt;Now that we have our data processed and ready, we are ready to build our classifier. We will be using Keras which is an API for packages for advanced machine learning like TensorFlow, Theano etc. We will be using the Keras API with the TensorFlow backend. As a first trial we will split the X and y data set into training and test set so that evaluate the performance of our neural network.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="cell border-box-sizing code_cell rendered"&gt;
-&lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [24]:&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-&lt;div class="input_area"&gt;
-&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.model_selection&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;train_test_split&lt;/span&gt;
-&lt;span class="n"&gt;X_train&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;X_test&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y_train&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y_test&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;train_test_split&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;X&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;test_size&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mf"&gt;0.2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;random_state&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
-&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
-&lt;p&gt;Now we will import all the libraries required to build our neural network.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="cell border-box-sizing code_cell rendered"&gt;
-&lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [44]:&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-&lt;div class="input_area"&gt;
-&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;keras.models&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Sequential&lt;/span&gt;
-&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;keras.layers&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Dense&lt;/span&gt;
-&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;keras.layers&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Dropout&lt;/span&gt;
-&lt;span class="n"&gt;X_train&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;shape&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="output_wrapper"&gt;
-&lt;div class="output"&gt;
-&lt;div class="output_area"&gt;
-&lt;div class="prompt output_prompt"&gt;Out[44]:&lt;/div&gt;
-&lt;div class="output_text output_subarea output_execute_result"&gt;
-&lt;pre&gt;(455, 30)&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
-&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
-&lt;p&gt;Using Sequential and Dense we will build our classifier and we will be able to add layers to our network.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="cell border-box-sizing code_cell rendered"&gt;
-&lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [52]:&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-&lt;div class="input_area"&gt;
-&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;classifier&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Sequential&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-
-&lt;span class="c1"&gt;#Add the input layer and first hidden layer&lt;/span&gt;
-&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dense&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;units&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;kernel_initializer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'uniform'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;activation&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'relu'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;input_dim&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;30&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  &lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dropout&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;rate&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
-&lt;span class="c1"&gt;#Add second hidden layer&lt;/span&gt;
-&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dense&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;units&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;kernel_initializer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'uniform'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;activation&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'relu'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  &lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dropout&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;rate&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
-
-&lt;span class="c1"&gt;#Add third hidden layer&lt;/span&gt;
-&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dense&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;units&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;kernel_initializer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'uniform'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;activation&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'relu'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  &lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dropout&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;rate&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
-
-&lt;span class="c1"&gt;#Add fourth hidden layer&lt;/span&gt;
-&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dense&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;units&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;kernel_initializer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'uniform'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;activation&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'relu'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  &lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dropout&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;rate&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
-
-&lt;span class="c1"&gt;#Add fifth hidden layer&lt;/span&gt;
-&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dense&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;units&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;kernel_initializer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'uniform'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;activation&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'relu'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  &lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dropout&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;rate&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
-
-&lt;span class="c1"&gt;#Add sixth hidden layer&lt;/span&gt;
-&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dense&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;units&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;kernel_initializer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'uniform'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;activation&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'relu'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  &lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dropout&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;rate&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
-
-&lt;span class="c1"&gt;#Add seventh hidden layer&lt;/span&gt;
-&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dense&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;units&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;15&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;kernel_initializer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'uniform'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;activation&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'relu'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  &lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dropout&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;rate&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
-
-&lt;span class="c1"&gt;#Add eighth hidden layer&lt;/span&gt;
-&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;add&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Dense&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;units&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;kernel_initializer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'uniform'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;activation&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'sigmoid'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  &lt;span class="p"&gt;)&lt;/span&gt;
-
-&lt;span class="c1"&gt;# Compiling the ANN&lt;/span&gt;
-&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;compile&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;optimizer&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'adam'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;loss&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'binary_crossentropy'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;metrics&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'accuracy'&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
-
-&lt;span class="c1"&gt;# Fitting the ANN to the Training set&lt;/span&gt;
-&lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;X_train&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y_train&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;batch_size&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;epochs&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="output_wrapper"&gt;
-&lt;div class="output"&gt;
-&lt;div class="output_area"&gt;
-&lt;div class="prompt"&gt;&lt;/div&gt;
-&lt;div class="output_subarea output_stream output_stdout output_text"&gt;
-&lt;pre&gt;Epoch 1/100
-455/455 [==============================] - 0s - loss: 0.6902 - acc: 0.6374     
-Epoch 2/100
-455/455 [==============================] - 0s - loss: 0.6769 - acc: 0.6374     
-Epoch 3/100
-455/455 [==============================] - 0s - loss: 0.4298 - acc: 0.6374     
-Epoch 4/100
-455/455 [==============================] - 0s - loss: 0.3300 - acc: 0.6615     
-Epoch 5/100
-455/455 [==============================] - 0s - loss: 0.2823 - acc: 0.9758     
-Epoch 6/100
-455/455 [==============================] - 0s - loss: 0.2694 - acc: 0.9846     
-Epoch 7/100
-455/455 [==============================] - 0s - loss: 0.2040 - acc: 0.9890     
-Epoch 8/100
-455/455 [==============================] - 0s - loss: 0.1185 - acc: 0.9802     
-Epoch 9/100
-455/455 [==============================] - 0s - loss: 0.0781 - acc: 0.9890     
-Epoch 10/100
-455/455 [==============================] - 0s - loss: 0.0689 - acc: 0.9868     
-Epoch 11/100
-455/455 [==============================] - 0s - loss: 0.0767 - acc: 0.9868     
-Epoch 12/100
-455/455 [==============================] - 0s - loss: 0.0662 - acc: 0.9824     
-Epoch 13/100
-455/455 [==============================] - 0s - loss: 0.0563 - acc: 0.9890     
-Epoch 14/100
-455/455 [==============================] - 0s - loss: 0.0559 - acc: 0.9890     
-Epoch 15/100
-455/455 [==============================] - 0s - loss: 0.0607 - acc: 0.9868     
-Epoch 16/100
-455/455 [==============================] - 0s - loss: 0.0478 - acc: 0.9912     
-Epoch 17/100
-455/455 [==============================] - 0s - loss: 0.0471 - acc: 0.9890     
-Epoch 18/100
-455/455 [==============================] - 0s - loss: 0.0499 - acc: 0.9890     
-Epoch 19/100
-455/455 [==============================] - 0s - loss: 0.0412 - acc: 0.9912     
-Epoch 20/100
-455/455 [==============================] - 0s - loss: 0.0460 - acc: 0.9890     
-Epoch 21/100
-455/455 [==============================] - 0s - loss: 0.0443 - acc: 0.9912     
-Epoch 22/100
-455/455 [==============================] - 0s - loss: 0.0453 - acc: 0.9890     
-Epoch 23/100
-455/455 [==============================] - 0s - loss: 0.0405 - acc: 0.9912     
-Epoch 24/100
-455/455 [==============================] - 0s - loss: 0.0434 - acc: 0.9912     
-Epoch 25/100
-455/455 [==============================] - 0s - loss: 0.0395 - acc: 0.9912     
-Epoch 26/100
-455/455 [==============================] - 0s - loss: 0.0555 - acc: 0.9890     
-Epoch 27/100
-455/455 [==============================] - 0s - loss: 0.0518 - acc: 0.9868     
-Epoch 28/100
-455/455 [==============================] - 0s - loss: 0.0354 - acc: 0.9912     
-Epoch 29/100
-455/455 [==============================] - 0s - loss: 0.0410 - acc: 0.9890     
-Epoch 30/100
-455/455 [==============================] - 0s - loss: 0.0570 - acc: 0.9890     
-Epoch 31/100
-455/455 [==============================] - 0s - loss: 0.0654 - acc: 0.9758     
-Epoch 32/100
-455/455 [==============================] - 0s - loss: 0.0507 - acc: 0.9824     
-Epoch 33/100
-455/455 [==============================] - 0s - loss: 0.0456 - acc: 0.9890     
-Epoch 34/100
-455/455 [==============================] - 0s - loss: 0.0410 - acc: 0.9890     
-Epoch 35/100
-455/455 [==============================] - 0s - loss: 0.0413 - acc: 0.9890     
-Epoch 36/100
-455/455 [==============================] - 0s - loss: 0.0377 - acc: 0.9912     
-Epoch 37/100
-455/455 [==============================] - 0s - loss: 0.0375 - acc: 0.9890     
-Epoch 38/100
-455/455 [==============================] - 0s - loss: 0.0293 - acc: 0.9912     
-Epoch 39/100
-455/455 [==============================] - 0s - loss: 0.0417 - acc: 0.9890     
-Epoch 40/100
-455/455 [==============================] - 0s - loss: 0.0387 - acc: 0.9868     
-Epoch 41/100
-455/455 [==============================] - 0s - loss: 0.0350 - acc: 0.9912     
-Epoch 42/100
-455/455 [==============================] - 0s - loss: 0.0366 - acc: 0.9890     
-Epoch 43/100
-455/455 [==============================] - 0s - loss: 0.0358 - acc: 0.9912        
-Epoch 44/100
-455/455 [==============================] - 0s - loss: 0.0265 - acc: 0.9912        
-Epoch 45/100
-455/455 [==============================] - 0s - loss: 0.0357 - acc: 0.9890     
-Epoch 46/100
-455/455 [==============================] - 0s - loss: 0.0367 - acc: 0.9890     
-Epoch 47/100
-455/455 [==============================] - 0s - loss: 0.0283 - acc: 0.9934     
-Epoch 48/100
-455/455 [==============================] - 0s - loss: 0.0362 - acc: 0.9912     
-Epoch 49/100
-455/455 [==============================] - 0s - loss: 0.0314 - acc: 0.9912     
-Epoch 50/100
-455/455 [==============================] - 0s - loss: 0.0269 - acc: 0.9912     
-Epoch 51/100
-455/455 [==============================] - 0s - loss: 0.0253 - acc: 0.9912        
-Epoch 52/100
-455/455 [==============================] - 0s - loss: 0.0281 - acc: 0.9912        
-Epoch 53/100
-455/455 [==============================] - 0s - loss: 0.0624 - acc: 0.9802     
-Epoch 54/100
-455/455 [==============================] - 0s - loss: 0.1151 - acc: 0.9736     
-Epoch 55/100
-455/455 [==============================] - 0s - loss: 0.0578 - acc: 0.9802     
-Epoch 56/100
-455/455 [==============================] - 0s - loss: 0.0378 - acc: 0.9868     
-Epoch 57/100
-455/455 [==============================] - 0s - loss: 0.0378 - acc: 0.9868     
-Epoch 58/100
-455/455 [==============================] - 0s - loss: 0.0274 - acc: 0.9934     
-Epoch 59/100
-455/455 [==============================] - 0s - loss: 0.0342 - acc: 0.9890     
-Epoch 60/100
-455/455 [==============================] - 0s - loss: 0.0465 - acc: 0.9868     
-Epoch 61/100
-455/455 [==============================] - 0s - loss: 0.0428 - acc: 0.9868     
-Epoch 62/100
-455/455 [==============================] - 0s - loss: 0.0352 - acc: 0.9912        
-Epoch 63/100
-455/455 [==============================] - 0s - loss: 0.0327 - acc: 0.9868        
-Epoch 64/100
-455/455 [==============================] - 0s - loss: 0.0308 - acc: 0.9912     
-Epoch 65/100
-455/455 [==============================] - 0s - loss: 0.0288 - acc: 0.9912     
-Epoch 66/100
-455/455 [==============================] - 0s - loss: 0.0258 - acc: 0.9912     
-Epoch 67/100
-455/455 [==============================] - 0s - loss: 0.0214 - acc: 0.9934        
-Epoch 68/100
-455/455 [==============================] - 0s - loss: 0.0221 - acc: 0.9912        
-Epoch 69/100
-455/455 [==============================] - 0s - loss: 0.0210 - acc: 0.9934        
-Epoch 70/100
-455/455 [==============================] - 0s - loss: 0.0221 - acc: 0.9912     
-Epoch 71/100
-455/455 [==============================] - 0s - loss: 0.0092 - acc: 0.9978     
-Epoch 72/100
-455/455 [==============================] - 0s - loss: 0.0237 - acc: 0.9934        
-Epoch 73/100
-455/455 [==============================] - 0s - loss: 0.0139 - acc: 0.9956     
-Epoch 74/100
-455/455 [==============================] - 0s - loss: 0.0096 - acc: 0.9978     
-Epoch 75/100
-455/455 [==============================] - 0s - loss: 0.0110 - acc: 0.9956     
-Epoch 76/100
-455/455 [==============================] - 0s - loss: 0.0241 - acc: 0.9956     
-Epoch 77/100
-455/455 [==============================] - 0s - loss: 0.0141 - acc: 0.9978        
-Epoch 78/100
-455/455 [==============================] - 0s - loss: 0.0113 - acc: 0.9956     
-Epoch 79/100
-455/455 [==============================] - 0s - loss: 0.0071 - acc: 1.0000     
-Epoch 80/100
-455/455 [==============================] - 0s - loss: 0.0142 - acc: 0.9978     
-Epoch 81/100
-455/455 [==============================] - 0s - loss: 0.0044 - acc: 1.0000        
-Epoch 82/100
-455/455 [==============================] - 0s - loss: 0.0238 - acc: 0.9912     
-Epoch 83/100
-455/455 [==============================] - 0s - loss: 0.0282 - acc: 0.9912     
-Epoch 84/100
-455/455 [==============================] - 0s - loss: 0.0542 - acc: 0.9912        
-Epoch 85/100
-455/455 [==============================] - 0s - loss: 0.0377 - acc: 0.9912        
-Epoch 86/100
-455/455 [==============================] - 0s - loss: 0.0139 - acc: 0.9956     
-Epoch 87/100
-455/455 [==============================] - 0s - loss: 0.0138 - acc: 0.9956        
-Epoch 88/100
-455/455 [==============================] - 0s - loss: 0.0131 - acc: 0.9956        
-Epoch 89/100
-455/455 [==============================] - 0s - loss: 0.0081 - acc: 0.9978     
-Epoch 90/100
-455/455 [==============================] - 0s - loss: 0.0290 - acc: 0.9934     
-Epoch 91/100
-455/455 [==============================] - 0s - loss: 0.0085 - acc: 0.9978     
-Epoch 92/100
-455/455 [==============================] - 0s - loss: 0.0094 - acc: 0.9978     
-Epoch 93/100
-455/455 [==============================] - 0s - loss: 0.0060 - acc: 0.9978        
-Epoch 94/100
-455/455 [==============================] - 0s - loss: 0.0125 - acc: 0.9978        
-Epoch 95/100
-455/455 [==============================] - 0s - loss: 0.0118 - acc: 0.9956        
-Epoch 96/100
-455/455 [==============================] - 0s - loss: 0.0128 - acc: 0.9956     
-Epoch 97/100
-455/455 [==============================] - 0s - loss: 0.0123 - acc: 0.9956     
-Epoch 98/100
-455/455 [==============================] - 0s - loss: 0.0094 - acc: 0.9978     
-Epoch 99/100
-455/455 [==============================] - 0s - loss: 0.0034 - acc: 1.0000     
-Epoch 100/100
-455/455 [==============================] - 0s - loss: 0.0025 - acc: 1.0000        
-&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="output_area"&gt;
-&lt;div class="prompt output_prompt"&gt;Out[52]:&lt;/div&gt;
-&lt;div class="output_text output_subarea output_execute_result"&gt;
-&lt;pre&gt;&lt;keras.callbacks.history at 0x7f94e89fec50&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
-&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
-&lt;p&gt;Our classifier seems to have a really good accuracy on the test set. But that might be just because of overfitting. The Dropout is used as a form of regularization while training our classifier. However in order to know the actual accuracy of our classifier we need to implement on the test set and check how .&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="cell border-box-sizing code_cell rendered"&gt;
-&lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [53]:&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-&lt;div class="input_area"&gt;
-&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# Predicting the Test set results&lt;/span&gt;
-&lt;span class="n"&gt;y_pred&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;classifier&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;predict&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;X_test&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;y_pred&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;y_pred&lt;/span&gt; &lt;span class="o"&gt;&gt;&lt;/span&gt; &lt;span class="mf"&gt;0.5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-
-&lt;span class="c1"&gt;# Making the Confusion Matrix&lt;/span&gt;
-&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.metrics&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;confusion_matrix&lt;/span&gt;
-&lt;span class="n"&gt;cm&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;confusion_matrix&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;y_test&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y_pred&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="cell border-box-sizing code_cell rendered"&gt;
-&lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [54]:&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-&lt;div class="input_area"&gt;
-&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;accuracy_cm&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cm&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;cm&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cm&lt;/span&gt;&lt;span class="p"&gt;)))&lt;/span&gt;
-&lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'The accuracy is : '&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;accuracy_cm&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="output_wrapper"&gt;
-&lt;div class="output"&gt;
-&lt;div class="output_area"&gt;
-&lt;div class="prompt"&gt;&lt;/div&gt;
-&lt;div class="output_subarea output_stream output_stdout output_text"&gt;
-&lt;pre&gt;The accuracy is :  0.964912280702
-&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
-&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
-&lt;p&gt;This is not bad, our algorithm is able to distinguish between malignant and benign tumors with an accuracy of nearly 96.5%. Remember this dataset is not large but with the extensive number of features and a deep artificial neural network, we are able to make a very good prediction. We still have nearly 5% chance of getting it wrong. bUt for a first trial it is not bad.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
